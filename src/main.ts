@@ -6,6 +6,8 @@ import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
 import { join } from 'path';
+
+
 const { PORT, COOKIE_SECRET } = process.env;
 
 async function bootstrap() {

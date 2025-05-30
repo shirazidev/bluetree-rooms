@@ -7,7 +7,6 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ConfirmedPassword } from 'src/common/decorators/password.decorator';
-import { Roles } from 'src/common/enums/role.enum';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -27,9 +26,5 @@ export class CreateUserDto {
   @ApiProperty()
   @ConfirmedPassword('password')
   confirm_password: string;
-
-  @ApiProperty({ example: 'admin', required: false, enum: Roles })
-  @IsEnum(Roles, { message: 'نقش وارد شده معتبر نیست.' })
-  role?: Roles;
 }
 export class UpdateUserDto extends PartialType(CreateUserDto) {}

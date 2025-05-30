@@ -11,7 +11,6 @@ import { Repository } from 'typeorm';
 import { TokensPayload } from './types/payload';
 import { compareSync, genSaltSync, hashSync } from 'bcrypt';
 import { LoginDto, SignupDto } from './dto/basic.dto';
-import { Roles } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -87,7 +86,7 @@ export class AuthService {
       if (typeof payload === 'object' && payload?.id) {
         const user = await this.userRepository.findOne({
           where: { id: payload.id },
-          select: ['id', 'username', 'fullName', 'role'],
+          select: ['id', 'username', 'fullName'],
         });
         if (!user) throw new UnauthorizedException('برای ورود ابتدا وارد حساب کاربری خود شوید');
         return user;
@@ -96,15 +95,5 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException('برای ورود ابتدا وارد حساب کاربری خود شوید');
     }
-  }
-
-  async setUserRoleAdmin(id: number) {
-    let user = await this.userRepository.findOneBy({ id });
-    if (!user) throw new NotFoundException('کاربر یافت نشد');
-    user.role = Roles.Admin;
-    await this.userRepository.save(user);
-    return {
-      message: 'با موفقیت انجام شد',
-    };
   }
 }
