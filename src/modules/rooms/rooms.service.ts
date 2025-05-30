@@ -1,26 +1,86 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateRoomDto } from './dto/update-room.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Room } from './entities/room.entity';
+import { DataSource, Repository } from 'typeorm';
+import { Brand } from './entities/brand.entity';
+import { TeamMember } from './entities/team-member.entity';
+import { ContactInfo } from './entities/contact-info.entity';
+import { AboutUs } from './entities/about-us.entity';
+import { CreateRoomDto } from './dto/create-room.dto';
 
 @Injectable()
 export class RoomsService {
-  create(createRoomDto: CreateBrandDto) {
-    return 'This action adds a new room';
+  constructor(
+    @InjectRepository(Room)
+    private roomRepository: Repository<Room>,
+    @InjectRepository(Brand)
+    private brandRepository: Repository<Brand>,
+    @InjectRepository(TeamMember)
+    private teamMemberRepository: Repository<TeamMember>,
+    @InjectRepository(ContactInfo)
+    private contactInfoRepository: Repository<ContactInfo>,
+    @InjectRepository(AboutUs)
+    private aboutUsRepository: Repository<AboutUs>,
+    private dataSource: DataSource,
+  ) {}
+  async findBySlugWithBrand(slug: string) {
+    const room = await this.roomRepository.findOne({
+      where: { slug },
+      relations: [
+        'brand',
+        'brand.teamMembers',
+        'brand.contactInfos',
+        'brand.aboutUs',
+      ],
+    });
+    if (!room) {
+      throw new NotFoundException(`Room with slug ${slug} not found`);
+    }
+    return room;
   }
 
-  findAll() {
-    return `This action returns all rooms`;
-  }
+  async createBrand(createBrandDto: CreateBrandDto): Promise<Brand> {
+    return this.dataSource.transaction(async (manager) => {
+      const { teamMembers, contactInfos, aboutUs, ...brandData } =
+        createBrandDto;
 
-  findOne(id: number) {
-    return `This action returns a #${id} room`;
-  }
+      const brand = manager.create(Brand, brandData);
+      await manager.save(brand);
 
-  update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
-  }
+      const aboutUsEntity = manager.create(AboutUs, { ...aboutUs, brand });
+      await manager.save(aboutUsEntity);
 
-  remove(id: number) {
-    return `This action removes a #${id} room`;
+      const teamMemberEntities = teamMembers.map((tm) =>
+        manager.create(TeamMember, { ...tm, brand }),
+      );
+      await manager.save(teamMemberEntities);
+
+      const contactInfoEntities = contactInfos.map((ci) =>
+        manager.create(ContactInfo, { ...ci, brand }),
+      );
+      await manager.save(contactInfoEntities);
+
+      brand.teamMembers = teamMemberEntities;
+      brand.contactInfos = contactInfoEntities;
+      brand.aboutUs = aboutUsEntity;
+
+      return brand;
+    });
   }
+  async connectBrandToRoom(roomId: number, brandId: number) {
+    const room = await this.roomRepository.findOne({ where: { id: roomId } });
+    if (!room) throw new NotFoundException('Room not found');
+    const brand = await this.brandRepository.findOne({
+      where: { id: brandId },
+    });
+    if (!brand) throw new NotFoundException('Brand not found');
+    room.brandId = brandId;
+    await this.roomRepository.save(room);
+    return room;
+  }
+  async createRoom(createRoomDto: CreateRoomDto) {
+  const room = this.roomRepository.create(createRoomDto);
+  return this.roomRepository.save(room);
+}
 }

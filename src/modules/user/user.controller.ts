@@ -12,8 +12,10 @@ import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { ApiConsumes } from '@nestjs/swagger';
 import { SwaggerConsumesEnum } from 'src/common/enums/swagger-consumes.enum';
+import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 
 @Controller('admin/users')
+@AuthDecorator()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
