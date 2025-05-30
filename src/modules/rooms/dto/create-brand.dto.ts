@@ -1,62 +1,78 @@
-// src/modules/rooms/dto/create-brand.dto.ts
-import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, ValidateNested, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
-class CreateTeamMemberDto {
+export class CreateTeamMemberDto {
+  @ApiProperty()
   @IsString()
-  firstName: string;
+  fullName: string;
 
+  @ApiProperty()
   @IsString()
-  lastName: string;
+  role: string;
 
-  @IsOptional()
+  @ApiProperty()
   @IsString()
-  role?: string;
-
-  @IsOptional()
-  @IsString()
-  profileImageUrl?: string;
+  profileImageUrl: string;
 }
 
-class CreateContactInfoDto {
+export class CreateContactInfoDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  type: string;
+  linkedin?: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  value: string;
+  phone?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  instagram?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  telegram?: string;
 }
 
-class CreateAboutUsDto {
+export class CreateAboutUsDto {
+  @ApiProperty()
   @IsString()
   content: string;
 }
 
 export class CreateBrandDto {
+  @ApiProperty()
   @IsString()
   name: string;
 
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   description?: string;
 
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   logoUrl?: string;
 
-  @IsOptional()
+  @ApiProperty({ type: [CreateTeamMemberDto] })
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateTeamMemberDto)
-  @IsArray()
-  teamMembers?: CreateTeamMemberDto[];
+  teamMembers: CreateTeamMemberDto[];
 
-  @IsOptional()
+  @ApiProperty({ type: [CreateContactInfoDto] })
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateContactInfoDto)
-  @IsArray()
-  contactInfos?: CreateContactInfoDto[];
+  contactInfos: CreateContactInfoDto[];
 
-  @IsOptional()
+  @ApiProperty({ type: CreateAboutUsDto })
   @ValidateNested()
   @Type(() => CreateAboutUsDto)
-  aboutUs?: CreateAboutUsDto;
+  aboutUs: CreateAboutUsDto;
 }

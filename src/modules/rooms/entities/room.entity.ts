@@ -1,13 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
 import { Brand } from './brand.entity';
 import { BaseEntity } from '../../../common/abstracts/base.entity';
 
 @Entity()
-export class Room extends BaseEntity{
-
+export class Room extends BaseEntity {
   @Column({ unique: true })
   slug: string;
 
-  @OneToOne(() => Brand, brand => brand.room)
+  @Column({nullable: true})
+  brandId: number;
+
+  @ManyToOne(() => Brand)
+  @JoinColumn({ name: 'brandId' })
   brand: Brand;
 }

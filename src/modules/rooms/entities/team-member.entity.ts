@@ -5,10 +5,7 @@ import { BaseEntity } from '../../../common/abstracts/base.entity';
 @Entity()
 export class TeamMember extends BaseEntity{
   @Column()
-  firstName: string;
-
-  @Column()
-  lastName: string;
+  fullName: string;
 
   @Column({ nullable: true })
   role: string;
