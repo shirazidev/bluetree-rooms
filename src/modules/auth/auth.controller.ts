@@ -20,7 +20,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')
-  @AuthDecorator()
+  // @AuthDecorator()
   @ApiConsumes(SwaggerConsumesEnum.FORM, SwaggerConsumesEnum.JSON)
   async signup(@Body() signupDto: SignupDto) {
     return await this.authService.signup(signupDto);

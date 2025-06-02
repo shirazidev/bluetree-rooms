@@ -1,137 +1,253 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>برندایس - Brandais</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 
     <style type="text/tailwindcss">
-        @layer base {
-            @font-face {
-                font-family: 'Anjoman FaNum';
-                src: url('/fonts/Anjoman-FaNum-Black.woff2') format('woff2');
-                font-weight: 1200;
-                font-style: normal;
-                font-display: swap;
-            }
-            @font-face {
-                font-family: 'Anjoman FaNum';
-                src: url('/fonts/Anjoman-FaNum-ExtraBold.woff2') format('woff2');
-                font-weight: 800;
-                font-style: normal;
-                font-display: swap;
-            }
-            @font-face {
-                font-family: 'Anjoman FaNum';
-                src: url('/fonts/Anjoman-FaNum-Medium.woff2') format('woff2');
-                font-weight: 500;
-                font-style: normal;
-                font-display: swap;
-            }
+      @layer base {
+        @font-face {
+          font-family: "Anjoman FaNum";
+          src: url("/fonts/Anjoman-FaNum-Black.woff2") format("woff2");
+          font-weight: 1200;
+          font-style: normal;
+          font-display: swap;
         }
+        @font-face {
+          font-family: "Anjoman FaNum";
+          src: url("/fonts/Anjoman-FaNum-ExtraBold.woff2") format("woff2");
+          font-weight: 800;
+          font-style: normal;
+          font-display: swap;
+        }
+        @font-face {
+          font-family: "Anjoman FaNum";
+          src: url("/fonts/Anjoman-FaNum-Medium.woff2") format("woff2");
+          font-weight: 500;
+          font-style: normal;
+          font-display: swap;
+        }
+      }
     </style>
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'anjoman-black': ['Anjoman FaNum', 'sans-serif'],
-                        'anjoman-extrabold': ['Anjoman FaNum', 'sans-serif'],
-                        'anjoman-medium': ['Anjoman FaNum', 'sans-serif'],
-                    },
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              "anjoman-black": ["Anjoman FaNum", "sans-serif"],
+              "anjoman-extrabold": ["Anjoman FaNum", "sans-serif"],
+              "anjoman-medium": ["Anjoman FaNum", "sans-serif"],
+            },
+          },
+        },
+      };
     </script>
 
     <style>
-        .text-justify {
-            text-align: justify;
-        }
-        .brand-logo-icon {
-            font-size: 5rem;
-            color: #4a5568;
-        }
+      .text-justify {
+        text-align: justify;
+      }
+      .brand-logo-icon {
+        font-size: 5rem;
+        color: #4a5568;
+      }
+      .bg-brand {
+        background-color: #edf4f5 !important;
+      }
     </style>
-</head>
-<body class="bg-gray-100 min-h-screen flex justify-center">
-    <div class="w-full max-w-md bg-white shadow-lg overflow-hidden flex flex-col">
+  </head>
+  <body class="min-h-screen flex justify-center bg-brand">
+    <div
+      class="w-full max-w-md shadow-lg overflow-hidden flex flex-col bg-brand"
+    >
+<header
+  class="fixed top-0 left-1/2 -translate-x-1/2 z-50 flex justify-between items-center rounded-xl shadow-xl border border-gray-200 p-6 w-[calc(100%-2rem)] max-w-md text-center backdrop-blur bg-[rgba(5,31,68,0.8)]"
+>
+  <div class="w-10 h-10 flex items-center justify-center">
+    <img
+      src="/images/blueTreepng.png"
+      alt="Logo Left"
+      class="rounded-full"
+    />
+  </div>
+  <div class="h-10 rounded-lg flex items-center justify-center">
+    <img
+      src="/images/bluetree.png"
+      alt="Center Logo - Derakht Ab"
+      class="h-full"
+    />
+  </div>
+  <div class="w-12 h-13 flex items-center justify-center">
+    <img src="/images/mizban.svg" alt="Logo Right" class="rounded-full" />
+  </div>
+</header>
 
-        <header class="flex justify-between items-center bg-white rounded-xl shadow-sm border border-gray-200 p-6 mx-4 mt-3 text-center">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center">
-                <img src="/images/blueTreepng.png" alt="Logo Left" class="rounded-full">
-            </div>
-            <div class=" h-10 rounded-lg flex items-center justify-center">
-                <img src="/images/bluetree.png" alt="Center Logo - Derakht Ab" class="h-full">
-                </div>
-            <div class="w-10 h-10 rounded-full flex items-center justify-center">
-                <img src="/images/mizban.png" alt="Logo Right" class="rounded-full">
-            </div>
-        </header>
-
-        <main class="pb-8 bg-white rounded-xl text-center">
-            <section class="rounded-xl shadow-sm border border-gray-200 p-6 mx-4 mt-5 text-center">
-                <div class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                    <img src="/images/photo_2025-03-07_20-40-33.jpg" class="fas fa-b brand-logo-icon"></i>
-                </div>
-                <h1 class="text-3xl font-anjoman-black mb-2" style="color: #051F44;">برندایس</h1>
-                <div class="border-t border-gray-200 mt-4 pt-4 text-xs text-gray-500"></div>
-                <p class="text-sm font-anjoman-extrabold font-extrabold" style="color: #69788e;">تولید محتوا و مارکتینگ</p>
-            </section>
-        <div class="rounded-xl p-2 text-center mx-5 mt-2">
-            <section class="mt-8 px-4">
-                <h2 class="text-xl font-anjoman-black text-gray-800 mb-4 text-center">معرفی اعضا</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex flex-col items-center p-2">
-                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-                            <img src="/images/photo_2025-03-07_20-40-33.jpg" class="fas fa-user-circle rounded-full text-5xl text-gray-400"></i>
-                        </div>
-                        <p class="text-sm font-anjoman-extrabold font-extrabold mt-2" style="color: #051F44;">سیروس صالحی</p>
-                        <p class="text-xs font-anjoman-medium font-medium mx-4 mt-2" style="color: #69788e;">مدیر داخلی</p>
+      <main class="pb-8 pt-28 rounded-xl text-center bg-brand">
+        <section
+          class="rounded-xl shadow-sm border border-gray-200 p-6 mx-4 mt-5 text-center bg-brand"
+        >
+          <div
+            class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden bg-brand"
+          >
+            <% if (brand && brand.logoUrl) { %>
+              <img src="<%= brand.logoUrl %>" class="brand-logo-icon" />
+            <% } else { %>
+              <img src="/images/photo_2025-03-07_20-40-33.jpg" class="brand-logo-icon" />
+            <% } %>
+          </div>
+          <h1 class="text-3xl font-anjoman-black mb-2" style="color: #051f44">
+            <%= brand?.name || 'بدون نام' %>
+          </h1>
+          <div
+            class="border-t border-gray-200 mt-4 pt-4 text-xs text-gray-500"
+          ></div>
+          <p
+            class="text-sm font-anjoman-extrabold font-extrabold"
+            style="color: #69788e"
+          >
+            <%= brand?.description || '' %>
+          </p>
+        </section>
+        <div class="rounded-xl p-2 text-center mx-5 mt-2 bg-brand">
+            
+          <section class="mt-8 px-4 bg-brand">
+            <h2
+              class="text-xl font-anjoman-black mb-4 text-center"
+              style="color: #051f44"
+            >
+              درباره ما
+            </h2>
+            <div
+              class="border-t border-gray-200 mt-4 pt-4 text-xs text-gray-500"
+            ></div>
+            <p
+              class="text-sm text-justify leading-relaxed mb-6 font-anjoman-medium font-medium"
+              style="color: #084686"
+            >
+              <%= aboutus?.content || 'اطلاعاتی ثبت نشده است.' %>
+            </p>
+          </section>
+          <section class="mt-8 px-4 bg-brand">
+            <h2
+              class="text-xl font-anjoman-black mb-4 text-center"
+              style="color: #051f44"
+            >
+              معرفی اعضا
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+              <% if (members && members.length) { %>
+                <% members.forEach(function(member) { %>
+                  <div class="flex flex-col items-center p-2 bg-brand">
+                    <div
+                      class="w-20 h-20 rounded-full flex items-center justify-center mb-2 bg-brand"
+                    >
+                      <% if (member.profileImageUrl) { %>
+                        <img
+                          src="<%= member.profileImageUrl %>"
+                          class="rounded-full text-5xl text-gray-400"
+                        />
+                      <% } else { %>
+                        <img
+                          src="/images/photo_2025-03-07_20-40-33.jpg"
+                          class="rounded-full text-5xl text-gray-400"
+                        />
+                      <% } %>
                     </div>
-                    <div class="flex flex-col items-center p-2">
-                        <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-                            <img src="/images/photo_2025-03-07_20-40-33.jpg" class="fas fa-user-circle rounded-full text-5xl text-gray-400"></i>
-                        </div>
-                        <p class="text-sm font-anjoman-extrabold font-extrabold mt-2" style="color: #051F44;">امیرحسین شیرازی</p>
-                        <p class="text-xs font-anjoman-medium font-medium mt-2" style="color: #69788e;">برنامه نویس و فیلم بردار</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="mt-8 px-4">
-                <h2 class="text-xl font-anjoman-black mb-4 text-center" style="color: #051F44;">راه های ارتباطی</h2>
-                                <div class="border-t border-gray-200 mt-4 pt-4 text-xs text-gray-500"></div>
-
-                <p class="text-sm text-justify leading-relaxed mb-6 font-anjoman-medium font-medium" style="color: #69788e;">
-                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.
-                </p>
-                <div class="flex justify-center mt-6 gap-6">
-                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
-                        <i class="fab fa-instagram text-xl" style="color: #69788e;"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
-                        <i class="fab fa-telegram-plane text-xl" style="color: #69788e;"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
-                        <i class="fas fa-phone text-xl" style="color: #69788e;"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
-                        <i class="fab fa-linkedin-in text-xl" style="color: #69788e;"></i>
-                    </a>
-                </div>
-            </section>
+                    <p
+                      class="text-sm font-anjoman-extrabold font-extrabold mt-2"
+                      style="color: #051f44"
+                    >
+                      <%= member.fullName %>
+                    </p>
+                    <p
+                      class="text-xs font-anjoman-medium font-medium mx-4 mt-2"
+                      style="color: #084686"
+                    >
+                      <%= member.role %>
+                    </p>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <p>عضوی ثبت نشده است.</p>
+              <% } %>
             </div>
-        </main>
-        <footer class="w-full max-w-md mx-auto py-4 bg-white border-t border-gray-200 text-center mt-4">
-            <a href="https://github.com/shirazidev" target="_blank" class="text-xs text-gray-500 font-anjoman-medium">توسعه توسط امیرحسین شیرازی</p>
-        </footer>
+          </section>
+
+          <section class="mt-8 px-4 bg-brand">
+            <h2
+              class="text-xl font-anjoman-black mb-4 text-center"
+              style="color: #051f44"
+            >
+              راه های ارتباطی
+            </h2>
+            <div
+              class="border-t border-gray-200 mt-4 pt-4 text-xs text-gray-500"
+            ></div>
+            <div class="flex justify-center mt-6 gap-6">
+              <% if (contactus && contactus.length) { %>
+                <% contactus.forEach(function(contact) { %>
+                  <% if (contact.instagram) { %>
+                    <a
+                      href="<%= contact.instagram %>"
+                      class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+                    >
+                      <i class="fab fa-instagram text-xl" style="color: #051f44"></i>
+                    </a>
+                  <% } %>
+                  <% if (contact.telegram) { %>
+                    <a
+                      href="<%= contact.telegram %>"
+                      class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+                    >
+                      <i class="fab fa-telegram-plane text-xl" style="color: #051f44"></i>
+                    </a>
+                  <% } %>
+                  <% if (contact.phone) { %>
+                    <a
+                      href="tel:<%= contact.phone %>"
+                      class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+                    >
+                      <i class="fas fa-phone text-xl" style="color: #051f44"></i>
+                    </a>
+                  <% } %>
+                  <% if (contact.linkedin) { %>
+                    <a
+                      href="<%= contact.linkedin %>"
+                      class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+                    >
+                      <i class="fab fa-linkedin-in text-xl" style="color: #051f44"></i>
+                    </a>
+                  <% } %>
+                <% }); %>
+              <% } else { %>
+                <span>اطلاعات تماس ثبت نشده است.</span>
+              <% } %>
+            </div>
+          </section>
+        </div>
+      </main>
+      <footer
+        class="w-full max-w-md mx-auto py-4 border-t border-gray-200 text-center mt-4 shadow-sm border border-gray-200 p-6 mx-4 mt-3 text-center backdrop-blur bg-[rgba(5,31,68,0.9)]"
+      >
+        <a
+          href="https://github.com/shirazidev"
+          target="_blank"
+          class="text-xs font-anjoman-medium"
+          style="color: #edf4f5"
+          >توسعه توسط امیرحسین شیرازی</a
+        >
+      </footer>
     </div>
-
-</body>
+  </body>
 </html>

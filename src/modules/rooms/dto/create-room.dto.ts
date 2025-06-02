@@ -6,6 +6,5 @@ export class CreateRoomDto {
   @IsString()
   slug: string;
   @ApiPropertyOptional()
-  @IsInt()
   brandId: number;
 }

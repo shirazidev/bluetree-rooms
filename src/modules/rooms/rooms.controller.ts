@@ -22,7 +22,7 @@ export class RoomsController {
   @Render('bluetree')
   async getRoomBySlug(@Param('slug') slug: string) {
     const room = await this.roomsService.findBySlugWithBrand(slug);
-    return { brand: room.brand };
+    return { brand: room.brand, contactus: room.brand.contactInfos, aboutus: room.brand.aboutUs, members: room.brand.teamMembers };
   }
   @Post('/create-brand')
   @AuthDecorator()

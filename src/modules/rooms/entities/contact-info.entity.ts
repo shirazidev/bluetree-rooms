@@ -12,7 +12,7 @@ export class ContactInfo extends BaseEntity{
   @Column()
   telegram: string;
   @Column()
-  Instagram: string;
+  instagram: string;
 
   @ManyToOne(() => Brand, brand => brand.contactInfos)
   brand: Brand;

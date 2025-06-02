@@ -97,6 +97,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -109,6 +114,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -132,6 +142,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -168,6 +183,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -189,15 +209,29 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
           "User"
         ]
       }
     },
-    "/rooms/room": {
+    "/rooms/{slug}": {
       "get": {
-        "operationId": "RoomsController_getHello",
-        "parameters": [],
+        "operationId": "RoomsController_getRoomBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -208,9 +242,9 @@
         ]
       }
     },
-    "/rooms": {
+    "/rooms/create-brand": {
       "post": {
-        "operationId": "RoomsController_create",
+        "operationId": "RoomsController_createBrand",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -227,33 +261,174 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
           "Rooms"
         ]
+      }
+    },
+    "/rooms/{roomId}/connect-brand/{brandId}": {
+      "patch": {
+        "operationId": "RoomsController_connectBrandToRoom",
+        "parameters": [
+          {
+            "name": "roomId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "brandId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
+    "/rooms/create": {
+      "post": {
+        "operationId": "RoomsController_createRoom",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
+    "/image": {
+      "post": {
+        "operationId": "ImageController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "name",
+                  "image"
+                ]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "name",
+                  "image"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "tags": [
+          "images"
+        ]
       },
       "get": {
-        "operationId": "RoomsController_findAll",
+        "operationId": "ImageController_findAll",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
-          "Rooms"
+          "images"
         ]
       }
     },
-    "/rooms/{id}": {
+    "/image/{id}": {
       "get": {
-        "operationId": "RoomsController_findOne",
+        "operationId": "ImageController_findOne",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -263,18 +438,18 @@
           }
         },
         "tags": [
-          "Rooms"
+          "images"
         ]
       },
       "patch": {
-        "operationId": "RoomsController_update",
+        "operationId": "ImageController_update",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -283,7 +458,36 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateRoomDto"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
@@ -293,19 +497,24 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
-          "Rooms"
+          "images"
         ]
       },
       "delete": {
-        "operationId": "RoomsController_remove",
+        "operationId": "ImageController_remove",
         "parameters": [
           {
             "name": "id",
             "required": true,
             "in": "path",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -314,8 +523,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
         "tags": [
-          "Rooms"
+          "images"
         ]
       }
     }
@@ -416,13 +630,101 @@
           }
         }
       },
+      "CreateTeamMemberDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "profileImageUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fullName",
+          "role",
+          "profileImageUrl"
+        ]
+      },
+      "CreateContactInfoDto": {
+        "type": "object",
+        "properties": {
+          "linkedin": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "instagram": {
+            "type": "string"
+          },
+          "telegram": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateAboutUsDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
       "CreateBrandDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "logoUrl": {
+            "type": "string"
+          },
+          "teamMembers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateTeamMemberDto"
+            }
+          },
+          "contactInfos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateContactInfoDto"
+            }
+          },
+          "aboutUs": {
+            "$ref": "#/components/schemas/CreateAboutUsDto"
+          }
+        },
+        "required": [
+          "name",
+          "teamMembers",
+          "contactInfos",
+          "aboutUs"
+        ]
       },
-      "UpdateRoomDto": {
+      "CreateRoomDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "brandId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "slug"
+        ]
       }
     }
   }

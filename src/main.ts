@@ -7,15 +7,12 @@ import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
 import { join } from 'path';
 
-
 const { PORT, COOKIE_SECRET } = process.env;
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    origin: [
-      /^http:\/\/localhost:\d+$/,
-    ],
+    origin: [/^http:\/\/localhost:\d+$/, 'http://91.107.245.80'],
     credentials: true,
   });
   app.use(cookieParser(COOKIE_SECRET));
