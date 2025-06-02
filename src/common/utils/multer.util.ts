@@ -34,7 +34,7 @@ export function multerDestination(fieldName: string) {
     file: multerFile,
     callback: CallbackDestination,
   ): void {
-    let path = join('public', 'uploads', fieldName);
+    let path = join('../../public_html/public', 'uploads', fieldName);
     mkdirSync(path, { recursive: true });
     callback(null, path);
   };

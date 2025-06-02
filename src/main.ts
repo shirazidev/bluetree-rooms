@@ -16,7 +16,7 @@ async function bootstrap() {
     credentials: true,
   });
   app.use(cookieParser(COOKIE_SECRET));
-  app.useStaticAssets('public');
+  app.useStaticAssets('../../public_html/public');
   app.useGlobalPipes(new ValidationPipe());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
