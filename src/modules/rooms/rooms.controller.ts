@@ -5,19 +5,15 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Render,
-  Res,
-  NotFoundException,
   UseInterceptors,
-  UploadedFile,
   UploadedFiles,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('rooms')
 export class RoomsController {
@@ -33,20 +29,28 @@ export class RoomsController {
   @Render('bluetree')
   async getRoomBySlug(@Param('slug') slug: string) {
     const room = await this.roomsService.findBySlugWithBrand(slug);
-    return { brand: room.brand, contactus: room.brand.contactInfos, aboutus: room.brand.aboutUs, members: room.brand.teamMembers };
+    return {
+      brand: room.brand,
+      contactus: room.brand.contactInfos,
+      aboutus: room.brand.aboutUs,
+      members: room.brand.teamMembers,
+    };
   }
 
   @Post('brands')
   @AuthDecorator()
   @UseInterceptors(
-    FileInterceptor('logo'),
-    FilesInterceptor('teamMemberImages'),
+    FileFieldsInterceptor([
+      { name: 'logo', maxCount: 1 },
+      { name: 'teamMemberImages', maxCount: 10 },
+    ]),
   )
   async createBrand(
     @Body() createBrandDto: CreateBrandDto,
-    @UploadedFile() logo: Express.Multer.File,
-    @UploadedFiles() teamMemberImages: Express.Multer.File[],
+    @UploadedFiles() files: { logo?: Express.Multer.File[], teamMemberImages?: Express.Multer.File[] },
   ) {
+    const logo = files.logo ? files.logo[0] : null;
+    const teamMemberImages = files.teamMemberImages || [];
     return this.roomsService.createBrand(createBrandDto, logo, teamMemberImages);
   }
 
@@ -58,7 +62,7 @@ export class RoomsController {
   ) {
     return this.roomsService.connectBrandToRoom(roomId, brandId);
   }
-  
+
   @Post('create')
   @AuthDecorator()
   async createRoom(@Body() createRoomDto: CreateRoomDto) {
