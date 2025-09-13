@@ -14,6 +14,7 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { multerProfileStorage } from '../../common/utils/multer.util';
 
 @Controller('rooms')
 export class RoomsController {
@@ -38,15 +39,22 @@ export class RoomsController {
   }
 
   @Post('brands')
+  @AuthDecorator()
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'logo', maxCount: 1 },
-      { name: 'teamMemberImages', maxCount: 10 },
-    ]),
+    FileFieldsInterceptor(
+      [
+        { name: 'logo', maxCount: 1 },
+        { name: 'teamMemberImages', maxCount: 10 },
+      ],
+      {
+        storage: multerProfileStorage('brands'),
+      },
+    ),
   )
   async createBrand(
     @Body() createBrandDto: CreateBrandDto,
-    @UploadedFiles() files: { logo?: Express.Multer.File[], teamMemberImages?: Express.Multer.File[] },
+    @UploadedFiles()
+    files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
   ) {
     const logo = files.logo ? files.logo[0] : null;
     const teamMemberImages = files.teamMemberImages || [];
