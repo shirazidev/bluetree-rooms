@@ -8,13 +8,12 @@ import {
   Render,
   UseInterceptors,
   UploadedFiles,
-  Redirect,
   Res,
+  NotFoundException,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
-import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerProfileStorage } from '../../common/utils/multer.util';
 import { Response } from 'express';
@@ -96,6 +95,14 @@ export class RoomsController {
   @Render('bluetree')
   async getRoomBySlug(@Param('slug') slug: string) {
     const room = await this.roomsService.findBySlugWithBrand(slug);
+    if (!room.brand) {
+      return {
+        brand: null,
+        contactus: [],
+        aboutus: null,
+        members: [],
+      };
+    }
     return {
       brand: room.brand,
       contactus: room.brand.contactInfos,
