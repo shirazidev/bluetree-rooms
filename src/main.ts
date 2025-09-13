@@ -6,6 +6,7 @@ import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
 import { join } from 'path';
+import * as methodOverride from 'method-override';
 
 const { PORT, COOKIE_SECRET } = process.env;
 
@@ -20,6 +21,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+  app.use(methodOverride('_method'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('ejs');
   SwaggerConfigInit(app);

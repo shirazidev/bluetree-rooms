@@ -238,4 +238,11 @@ export class RoomsService {
         await manager.remove(brand);
     });
   }
+
+  async deleteRoom(roomId: number): Promise<void> {
+    const result = await this.roomRepository.delete(roomId);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Room with ID ${roomId} not found`);
+    }
+  }
 }
