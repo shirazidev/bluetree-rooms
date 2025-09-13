@@ -45,7 +45,7 @@ export class RoomsService {
 
   async createBrand(
     createBrandDto: CreateBrandDto,
-    logo: Express.Multer.File,
+    logo: Express.Multer.File | null,
     teamMemberImages: Express.Multer.File[],
   ): Promise<Brand> {
     return this.dataSource.transaction(async (manager) => {
