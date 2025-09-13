@@ -541,6 +541,20 @@
           "images"
         ]
       }
+    },
+    "/admin": {
+      "get": {
+        "operationId": "AdminController_root",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
     }
   },
   "info": {
