@@ -53,8 +53,11 @@ export class RoomsService {
 
       const brand = manager.create(Brand, brandData);
       if (logo) {
-        const logoImage = await this.imageService.createImage(logo);
-        brand.logoUrl = logoImage.url;
+        const logoImage = await this.imageService.create(
+          { name: brandData.name, alt: brandData.name },
+          logo,
+        );
+        brand.logoUrl = logoImage.data.location;
       }
       await manager.save(brand);
 
@@ -65,10 +68,11 @@ export class RoomsService {
         teamMembers.map(async (tm, index) => {
           const teamMember = manager.create(TeamMember, { ...tm, brand });
           if (teamMemberImages && teamMemberImages[index]) {
-            const profileImage = await this.imageService.createImage(
+            const profileImage = await this.imageService.create(
+              { name: tm.fullName, alt: tm.fullName },
               teamMemberImages[index],
             );
-            teamMember.profileImageUrl = profileImage.url;
+            teamMember.profileImageUrl = profileImage.data.location;
           }
           return manager.save(teamMember);
         }),
