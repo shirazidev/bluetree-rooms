@@ -18,17 +18,26 @@ import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
+
+  @Get('brands/create')
+  @Render('create-brand')
+  createBrandPage() {
+    return {};
+  }
+
   @Get(':slug')
   @Render('bluetree')
   async getRoomBySlug(@Param('slug') slug: string) {
     const room = await this.roomsService.findBySlugWithBrand(slug);
     return { brand: room.brand, contactus: room.brand.contactInfos, aboutus: room.brand.aboutUs, members: room.brand.teamMembers };
   }
-  @Post('/create-brand')
+
+  @Post('brands')
   @AuthDecorator()
   async createBrand(@Body() createBrandDto: CreateBrandDto) {
     return this.roomsService.createBrand(createBrandDto);
   }
+
   @Patch(':roomId/connect-brand/:brandId')
   @AuthDecorator()
   async connectBrandToRoom(
@@ -37,6 +46,7 @@ export class RoomsController {
   ) {
     return this.roomsService.connectBrandToRoom(roomId, brandId);
   }
+  
   @Post('create')
   @AuthDecorator()
   async createRoom(@Body() createRoomDto: CreateRoomDto) {
