@@ -1,110 +1,165 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Brand</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style type="text/tailwindcss">
+        @layer base {
+            @font-face {
+                font-family: "Anjoman FaNum";
+                src: url("/fonts/Anjoman-FaNum-Medium.woff2") format("woff2");
+                font-weight: 500;
+                font-style: normal;
+                font-display: swap;
+            }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        "anjoman-medium": ["Anjoman FaNum", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
     <style>
-        body { font-family: sans-serif; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: .5rem; }
-        input, textarea { width: 100%; padding: .5rem; }
-        .nested-group { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; }
-        .nested-group h3 { margin-top: 0; }
-        .remove-btn { margin-top: .5rem; }
+        body {
+            background-color: #edf4f5;
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Create Brand</h1>
-        <form action="/rooms/brands" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="name">Brand Name</label>
-                <input type="text" id="name" name="name" required>
+<body class="min-h-screen flex justify-center bg-brand">
+    <div class="w-full max-w-lg shadow-lg overflow-hidden flex flex-col bg-brand p-6">
+        <h1 class="text-3xl font-anjoman-black mb-6 text-center" style="color: #051f44">Create a New Brand</h1>
+
+        <form action="/rooms/brands" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+            <!-- Brand Information -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">Brand Information</h2>
+                <div class="form-group">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Brand Name</label>
+                    <input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="form-group">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="description" name="description" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                    <input type="file" id="logo" name="logo" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <img id="logo-preview" src="#" alt="Logo Preview" class="hidden mt-4 w-24 h-24 object-cover rounded-full mx-auto"/>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description"></textarea>
+            <!-- About Us -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">About Us</h2>
+                <div class="form-group">
+                    <label for="aboutUsContent" class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                    <textarea id="aboutUsContent" name="aboutUs[content]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="logo">Logo</label>
-                <input type="file" id="logo" name="logo">
+            <!-- Team Members -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">Team Members</h2>
+                <div id="team-members" class="space-y-4"></div>
+                <button type="button" id="add-team-member" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Add Team Member</button>
             </div>
 
-            <h2>About Us</h2>
-            <div class="form-group">
-                <label for="aboutUsContent">Content</label>
-                <textarea id="aboutUsContent" name="aboutUs[content]"></textarea>
+            <!-- Contact Information -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">Contact Information</h2>
+                <div id="contact-infos" class="space-y-4"></div>
+                <button type="button" id="add-contact-info" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Add Contact Info</button>
             </div>
 
-            <h2>Team Members</h2>
-            <div id="team-members"></div>
-            <button type="button" id="add-team-member">Add Team Member</button>
-
-            <h2>Contact Information</h2>
-            <div id="contact-infos"></div>
-            <button type="button" id="add-contact-info">Add Contact Info</button>
-
-            <button type="submit">Create Brand</button>
+            <button type="submit" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Create Brand</button>
         </form>
     </div>
 
     <script>
+        // Image preview for logo
+        document.getElementById('logo').addEventListener('change', function(event) {
+            const preview = document.getElementById('logo-preview');
+            const file = event.target.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('hidden');
+            }
+        });
+
+        // Dynamically add team members
         document.getElementById('add-team-member').addEventListener('click', () => {
             const container = document.getElementById('team-members');
             const index = container.children.length;
             const div = document.createElement('div');
-            div.classList.add('nested-group');
+            div.classList.add('nested-group', 'p-4', 'border', 'border-gray-200', 'rounded-lg');
             div.innerHTML = `
-                <h3>Team Member ${index + 1}</h3>
+                <h3 class="text-lg font-bold mb-2">Team Member ${index + 1}</h3>
                 <div class="form-group">
-                    <label for="teamMembers[${index}][fullName]">Full Name</label>
-                    <input type="text" name="teamMembers[${index}][fullName]" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" name="teamMembers[${index}][fullName]" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                <div class="form-group">
-                    <label for="teamMembers[${index}][role]">Role</label>
-                    <input type="text" name="teamMembers[${index}][role]" required>
+                <div class="form-group mt-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <input type="text" name="teamMembers[${index}][role]" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                <div class="form-group">
-                    <label for="teamMembers[${index}][profileImage]">Profile Image</label>
-                    <input type="file" name="teamMemberImages">
+                <div class="form-group mt-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Profile Image</label>
+                    <input type="file" name="teamMemberImages" class="w-full px-3 py-2 border border-gray-300 rounded-lg" onchange="previewTeamMemberImage(this, ${index})">
+                    <img id="team-member-preview-${index}" src="#" alt="Image Preview" class="hidden mt-2 w-20 h-20 object-cover rounded-full"/>
                 </div>
-                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+                <button type="button" class="mt-2 px-3 py-1 bg-red-600 text-white rounded-lg text-sm" onclick="this.parentElement.remove()">Remove</button>
             `;
             container.appendChild(div);
         });
 
+        // Dynamically add contact info
         document.getElementById('add-contact-info').addEventListener('click', () => {
             const container = document.getElementById('contact-infos');
             const index = container.children.length;
             const div = document.createElement('div');
-            div.classList.add('nested-group');
+            div.classList.add('nested-group', 'p-4', 'border', 'border-gray-200', 'rounded-lg');
             div.innerHTML = `
-                <h3>Contact Info ${index + 1}</h3>
+                <h3 class="text-lg font-bold mb-2">Contact Info ${index + 1}</h3>
                 <div class="form-group">
-                    <label for="contactInfos[${index}][linkedin]">LinkedIn</label>
-                    <input type="text" name="contactInfos[${index}][linkedin]">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                    <input type="text" name="contactInfos[${index}][linkedin]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                <div class="form-group">
-                    <label for="contactInfos[${index}][phone]">Phone</label>
-                    <input type="text" name="contactInfos[${index}][phone]">
+                <div class="form-group mt-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="text" name="contactInfos[${index}][phone]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                <div class="form-group">
-                    <label for="contactInfos[${index}][instagram]">Instagram</label>
-                    <input type="text" name="contactInfos[${index}][instagram]">
+                <div class="form-group mt-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
+                    <input type="text" name="contactInfos[${index}][instagram]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                <div class="form-group">
-                    <label for="contactInfos[${index}][telegram]">Telegram</label>
-                    <input type="text" name="contactInfos[${index}][telegram]">
+                <div class="form-group mt-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Telegram</label>
+                    <input type="text" name="contactInfos[${index}][telegram]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
-                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+                <button type="button" class="mt-2 px-3 py-1 bg-red-600 text-white rounded-lg text-sm" onclick="this.parentElement.remove()">Remove</button>
             `;
             container.appendChild(div);
         });
+
+        // Preview for team member images
+        function previewTeamMemberImage(input, index) {
+            const preview = document.getElementById(`team-member-preview-${index}`);
+            const file = input.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('hidden');
+            }
+        }
     </script>
 </body>
 </html>
