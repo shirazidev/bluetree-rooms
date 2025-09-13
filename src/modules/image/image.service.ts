@@ -1,4 +1,4 @@
-import { Injectable, Inject, Scope, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, Scope, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ImageEntity } from './entities/image.entity';
@@ -23,7 +23,13 @@ export class ImageService {
       ? image.path.slice(7)
       : image?.path;
 
-    const location = partialPath ? `${env.BASE_URL}/${partialPath}` : null;
+    if (!partialPath) {
+      throw new InternalServerErrorException(
+        'Image file was not provided or the path could not be determined.',
+      );
+    }
+
+    const location = `${env.BASE_URL}/${partialPath}`;
 
     const entity = this.imageRepository.create({
       name,
