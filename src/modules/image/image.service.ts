@@ -7,6 +7,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { PublicMessage } from '../../common/enums/message.enum';
 import { ImageDto } from './dto/create-image.dto';
+import { env } from 'node:process';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ImageService {
@@ -18,9 +19,11 @@ export class ImageService {
 
   async create(createImageDto: ImageDto, image: multerFile) {
     const { name, alt } = createImageDto;
-    const location = image?.path?.startsWith('public/')
+    const partialPath = image?.path?.startsWith('public/')
       ? image.path.slice(7)
       : image?.path;
+
+    const location = partialPath ? `${env.BASE_URL}/${partialPath}` : null;
 
     const entity = this.imageRepository.create({
       name,
@@ -63,9 +66,10 @@ export class ImageService {
     if (updateImageDto.name) entity.name = updateImageDto.name;
     if (updateImageDto.alt) entity.alt = updateImageDto.alt;
     if (image?.path) {
-      entity.location = image.path.startsWith('public/')
+      const partialPath = image.path.startsWith('public/')
         ? image.path.slice(7)
         : image.path;
+      entity.location = `${env.BASE_URL}/${partialPath}`;
     }
 
     await this.imageRepository.save(entity);
