@@ -65,7 +65,7 @@ export class AuthService {
 
   async makeTokensOfUser(payload: TokensPayload) {
     const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get('ACCESSTOKENJWT'),
+      secret: 'your-secret-key',
       expiresIn: '30d',
     });
     const refreshToken = this.jwtService.sign(payload, {
@@ -81,7 +81,7 @@ export class AuthService {
   async validateAccessToken(token: string) {
     try {
       const payload = this.jwtService.verify<TokensPayload>(token, {
-        secret: this.configService.get<string>('ACCESSTOKENJWT'),
+        secret: 'your-secret-key',
       });
       if (typeof payload === 'object' && payload?.id) {
         const user = await this.userRepository.findOne({
