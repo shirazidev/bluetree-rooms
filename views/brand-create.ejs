@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Brand</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6f42c1;
+            --success-color: #1cc88a;
+            --light-bg: #f8f9fc;
+        }
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Nunito', sans-serif;
+        }
+        .brand-card {
+            border-radius: 10px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 20px;
+            border: none;
+        }
+        .card-header {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        .preview-image {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        .team-member-box, .contact-info-box {
+            background-color: #f8f9fc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary-color);
+        }
+        .add-item-btn {
+            margin-bottom: 20px;
+        }
+        .remove-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="brand-card card">
+                <div class="card-header py-3">
+                    <h5 class="m-0 font-weight-bold"><i class="fas fa-plus-circle"></i> Create New Brand</h5>
+                </div>
+                <div class="card-body">
+                    <% if (message) { %>
+                        <div class="alert alert-<%= message.type %> alert-dismissible fade show" role="alert">
+                            <%= message.text %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+
+                    <form action="/brands" method="POST" enctype="multipart/form-data" id="brandForm">
+                        <!-- Basic Brand Information -->
+                        <div class="form-section">
+                            <h5 class="section-title"><i class="fas fa-info-circle"></i> Basic Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Brand Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="logo" class="form-label">Logo</label>
+                                    <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                                    <img id="logoPreview" class="preview-image" src="#" alt="Logo preview">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- About Us Section -->
+                        <div class="form-section">
+                            <h5 class="section-title"><i class="fas fa-building"></i> About Us</h5>
+                            <div class="mb-3">
+                                <label for="aboutContent" class="form-label">About Content *</label>
+                                <textarea class="form-control" id="aboutContent" name="aboutContent" rows="4" required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Team Members Section -->
+                        <div class="form-section">
+                            <h5 class="section-title"><i class="fas fa-users"></i> Team Members</h5>
+                            <div id="teamMembers">
+                                <div class="team-member-box">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Full Name *</label>
+                                            <input type="text" class="form-control" name="teamMembers[0][fullName]" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Role</label>
+                                            <input type="text" class="form-control" name="teamMembers[0][role]">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Profile Image</label>
+                                            <input type="file" class="form-control" name="teamMembers[0][profileImage]" accept="image/*">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary add-item-btn" id="addTeamMember">
+                                <i class="fas fa-plus"></i> Add Team Member
+                            </button>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <div class="form-section">
+                            <h5 class="section-title"><i class="fas fa-address-book"></i> Contact Information</h5>
+                            <div id="contactInfos">
+                                <div class="contact-info-box">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">LinkedIn</label>
+                                            <input type="url" class="form-control" name="contactInfos[0][linkedin]">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Phone *</label>
+                                            <input type="tel" class="form-control" name="contactInfos[0][phone]" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Telegram</label>
+                                            <input type="text" class="form-control" name="contactInfos[0][telegram]">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Instagram</label>
+                                            <input type="url" class="form-control" name="contactInfos[0][instagram]">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary add-item-btn" id="addContactInfo">
+                                <i class="fas fa-plus"></i> Add Contact Info
+                            </button>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-secondary me-md-2" id="previewBtn">Preview</button>
+                            <button type="submit" class="btn btn-primary">Create Brand</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Brand Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitForm">Confirm & Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Logo preview
+    document.getElementById('logo').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const preview = document.getElementById('logoPreview');
+          preview.src = event.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Add team member
+    let teamMemberCount = 1;
+    document.getElementById('addTeamMember').addEventListener('click', function() {
+      const template = `
+                    <div class="team-member-box">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" name="teamMembers[${teamMemberCount}][fullName]" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Role</label>
+                                <input type="text" class="form-control" name="teamMembers[${teamMemberCount}][role]">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Profile Image</label>
+                                <input type="file" class="form-control" name="teamMembers[${teamMemberCount}][profileImage]" accept="image/*">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger remove-btn remove-team-member">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                `;
+      document.getElementById('teamMembers').insertAdjacentHTML('beforeend', template);
+      teamMemberCount++;
+    });
+
+    // Add contact info
+    let contactInfoCount = 1;
+    document.getElementById('addContactInfo').addEventListener('click', function() {
+      const template = `
+                    <div class="contact-info-box">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">LinkedIn</label>
+                                <input type="url" class="form-control" name="contactInfos[${contactInfoCount}][linkedin]">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Phone *</label>
+                                <input type="tel" class="form-control" name="contactInfos[${contactInfoCount}][phone]" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Telegram</label>
+                                <input type="text" class="form-control" name="contactInfos[${contactInfoCount}][telegram]">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Instagram</label>
+                                <input type="url" class="form-control" name="contactInfos[${contactInfoCount}][instagram]">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger remove-btn remove-contact-info">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                `;
+      document.getElementById('contactInfos').insertAdjacentHTML('beforeend', template);
+      contactInfoCount++;
+    });
+
+    // Remove buttons
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-team-member')) {
+        e.target.closest('.team-member-box').remove();
+      }
+      if (e.target.classList.contains('remove-contact-info')) {
+        e.target.closest('.contact-info-box').remove();
+      }
+    });
+
+    // Preview functionality
+    document.getElementById('previewBtn').addEventListener('click', function() {
+      // Simple validation
+      const name = document.getElementById('name').value;
+      const aboutContent = document.getElementById('aboutContent').value;
+
+      if (!name || !aboutContent) {
+        alert('Please fill in all required fields before previewing.');
+        return;
+      }
+
+      // Generate preview content
+      const previewContent = document.getElementById('previewContent');
+      previewContent.innerHTML = `
+                    <h4>${name}</h4>
+                    <p><strong>Description:</strong> ${document.getElementById('description').value || 'N/A'}</p>
+                    <hr>
+                    <h5>About Us</h5>
+                    <p>${aboutContent}</p>
+                `;
+
+      // Show the modal
+      const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+      previewModal.show();
+    });
+
+    // Submit form from modal
+    document.getElementById('submitForm').addEventListener('click', function() {
+      document.getElementById('brandForm').submit();
+    });
+  });
+</script>
+</body>
+</html>
