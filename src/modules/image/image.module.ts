@@ -3,11 +3,20 @@ import { ImageService } from './image.service';
 import { ImageController } from './image.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImageEntity } from './entities/image.entity';
-import { AuthModule } from '../auth/auth.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { imageFileFilter, multerStorage } from '../../common/utils/multer.util';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([ImageEntity]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([ImageEntity]),
+    MulterModule.register({
+      storage: diskStorage(multerStorage('images')),
+      fileFilter: imageFileFilter,
+    }),
+  ],
   controllers: [ImageController],
   providers: [ImageService],
-  exports: [ImageService, TypeOrmModule],
+  exports: [ImageService],
 })
 export class ImageModule {}
