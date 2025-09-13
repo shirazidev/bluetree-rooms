@@ -11,7 +11,7 @@ export class Brand extends BaseEntity {
   @JoinColumn()
   room: Room;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column({ nullable: true })
