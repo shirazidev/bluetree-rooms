@@ -8,6 +8,8 @@ import {
   Render,
   UseInterceptors,
   UploadedFiles,
+  Redirect,
+  Res,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
@@ -15,15 +17,69 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { AuthDecorator } from 'src/common/decorators/auth.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerProfileStorage } from '../../common/utils/multer.util';
+import { Response } from 'express';
+import { UpdateBrandDto } from './dto/update-brand.dto';
 
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
+  @Post('connect-brand')
+  async connectBrandToRoomFromAdmin(
+    @Body() body: { roomId: string; brandId: string },
+    @Res() res: Response,
+  ) {
+    await this.roomsService.connectBrandToRoom(
+      parseInt(body.roomId, 10),
+      parseInt(body.brandId, 10),
+    );
+    res.redirect('/admin');
+  }
   @Get('brands/create')
   @Render('create-brand')
   createBrandPage() {
     return {};
+  }
+
+  @Get('brands/:id/edit')
+  @Render('edit-brand')
+  async editBrandPage(@Param('id') id: string) {
+    const brand = await this.roomsService.findBrandById(parseInt(id, 10));
+    return { brand };
+  }
+
+  @Post('brands/:id/update')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'logo', maxCount: 1 },
+        { name: 'teamMemberImages', maxCount: 10 },
+      ],
+      {
+        storage: multerProfileStorage('brands'),
+      },
+    ),
+  )
+  async updateBrand(
+    @Param('id') id: string,
+    @Body() updateBrandDto: UpdateBrandDto,
+    @UploadedFiles()
+    files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
+    @Res() res: Response,
+  ) {
+    await this.roomsService.updateBrand(
+      parseInt(id, 10),
+      updateBrandDto,
+      files.logo ? files.logo[0] : null,
+      files.teamMemberImages || [],
+    );
+    res.redirect('/admin');
+  }
+
+  @Post('brands/:id/delete')
+  async deleteBrand(@Param('id') id: string, @Res() res: Response) {
+    await this.roomsService.deleteBrand(parseInt(id, 10));
+    res.redirect('/admin');
   }
 
   @Get(':slug')
@@ -39,7 +95,6 @@ export class RoomsController {
   }
 
   @Post('brands')
-  // @AuthDecorator()
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -55,14 +110,17 @@ export class RoomsController {
     @Body() createBrandDto: CreateBrandDto,
     @UploadedFiles()
     files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
+    @Res() res: Response,
   ) {
-    const logo = files.logo ? files.logo[0] : null;
-    const teamMemberImages = files.teamMemberImages || [];
-    return this.roomsService.createBrand(createBrandDto, logo, teamMemberImages);
+    await this.roomsService.createBrand(
+      createBrandDto,
+      files.logo ? files.logo[0] : null,
+      files.teamMemberImages || [],
+    );
+    res.redirect('/admin');
   }
 
   @Patch(':roomId/connect-brand/:brandId')
-  @AuthDecorator()
   async connectBrandToRoom(
     @Param('roomId') roomId: number,
     @Param('brandId') brandId: number,
@@ -70,9 +128,9 @@ export class RoomsController {
     return this.roomsService.connectBrandToRoom(roomId, brandId);
   }
 
-  @Post('create')
-  @AuthDecorator()
-  async createRoom(@Body() createRoomDto: CreateRoomDto) {
-    return this.roomsService.createRoom(createRoomDto);
+  @Post()
+  async createRoom(@Body() createRoomDto: CreateRoomDto, @Res() res: Response) {
+    await this.roomsService.createRoom(createRoomDto);
+    res.redirect('/admin');
   }
 }

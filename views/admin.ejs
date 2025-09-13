@@ -63,8 +63,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap"><%= brand.name %></td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <a href="/rooms/brands/<%= brand.id %>/edit" class="text-blue-600 hover:underline mr-4">Edit</a>
-                                    <form action="/rooms/brands/<%= brand.id %>" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this brand?');">
-                                        <input type="hidden" name="_method" value="DELETE">
+                                    <form action="/rooms/brands/<%= brand.id %>/delete" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this brand?');">
                                         <button type="submit" class="text-red-600 hover:underline">Delete</button>
                                     </form>
                                 </td>
