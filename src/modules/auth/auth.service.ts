@@ -96,4 +96,14 @@ export class AuthService {
       throw new UnauthorizedException('برای ورود ابتدا وارد حساب کاربری خود شوید');
     }
   }
+
+  async validateUser(payload: TokensPayload) {
+    const user = await this.userRepository.findOneBy({ id: payload.id });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return result;
+  }
 }
