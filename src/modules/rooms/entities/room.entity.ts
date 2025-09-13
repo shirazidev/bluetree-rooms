@@ -8,9 +8,9 @@ export class Room extends BaseEntity {
   slug: string;
 
   @Column({nullable: true})
-  brandId: number;
+  brandId: number | null;
 
-  @ManyToOne(() => Brand)
+  @ManyToOne(() => Brand, {nullable: true})
   @JoinColumn({ name: 'brandId' })
-  brand: Brand;
+  brand: Brand | null;
 }
