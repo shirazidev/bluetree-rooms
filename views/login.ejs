@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login</title>
+  <title>ورود به پنل مدیریت</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    @font-face {
+      font-family: 'Anjoman';
+      src: url('/fonts/Anjoman-FaNum-Medium.woff2') format('woff2');
+    }
+    body {
+      font-family: 'Anjoman', sans-serif;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -12,19 +21,19 @@
       <div class="col-md-6">
         <div class="card mt-5">
           <div class="card-header">
-            <h3 class="text-center">Admin Login</h3>
+            <h3 class="text-center">ورود به پنل مدیریت</h3>
           </div>
           <div class="card-body">
             <form action="/auth/login" method="POST">
               <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username">نام کاربری</label>
                 <input type="text" class="form-control" id="username" name="username" required>
               </div>
               <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password">رمز عبور</label>
                 <input type="password" class="form-control" id="password" name="password" required>
               </div>
-              <button type="submit" class="btn btn-primary btn-block">Login</button>
+              <button type="submit" class="btn btn-primary btn-block">ورود</button>
             </form>
           </div>
         </div>
