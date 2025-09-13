@@ -8,5 +8,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [TypeOrmModule.forFeature([ImageEntity]), AuthModule],
   controllers: [ImageController],
   providers: [ImageService],
+  exports: [ImageService, TypeOrmModule],
 })
 export class ImageModule {}

@@ -219,6 +219,20 @@
         ]
       }
     },
+    "/rooms/brands/create": {
+      "get": {
+        "operationId": "RoomsController_createBrandPage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
     "/rooms/{slug}": {
       "get": {
         "operationId": "RoomsController_getRoomBySlug",
@@ -242,7 +256,7 @@
         ]
       }
     },
-    "/rooms/create-brand": {
+    "/rooms/brands": {
       "post": {
         "operationId": "RoomsController_createBrand",
         "parameters": [],
@@ -261,11 +275,6 @@
             "description": ""
           }
         },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
         "tags": [
           "Rooms"
         ]
@@ -645,8 +654,7 @@
         },
         "required": [
           "fullName",
-          "role",
-          "profileImageUrl"
+          "role"
         ]
       },
       "CreateContactInfoDto": {

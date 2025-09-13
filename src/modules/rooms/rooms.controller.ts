@@ -37,7 +37,6 @@ export class RoomsController {
   }
 
   @Post('brands')
-  @AuthDecorator()
   @UseInterceptors(
     FileInterceptor('logo'),
     FilesInterceptor('teamMemberImages'),
