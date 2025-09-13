@@ -9,17 +9,20 @@ import { AboutUs } from './entities/about-us.entity';
 import { ContactInfo } from './entities/contact-info.entity';
 import { AuthModule } from '../auth/auth.module';
 import { ImageModule } from '../image/image.module';
-import { ImageService } from '../image/image.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature(
-      [Room, Brand, TeamMember, AboutUs, ContactInfo],
-    ),
+    TypeOrmModule.forFeature([
+      Room,
+      Brand,
+      TeamMember,
+      AboutUs,
+      ContactInfo,
+    ]),
     AuthModule,
     ImageModule,
   ],
   controllers: [RoomsController],
-  providers: [RoomsService, ImageService],
+  providers: [RoomsService],
 })
 export class RoomsModule {}
