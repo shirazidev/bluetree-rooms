@@ -8,13 +8,15 @@ import { TeamMember } from './entities/team-member.entity';
 import { AboutUs } from './entities/about-us.entity';
 import { ContactInfo } from './entities/contact-info.entity';
 import { AuthModule } from '../auth/auth.module';
+import { ImageModule } from '../image/image.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(
       [Room, Brand, TeamMember, AboutUs, ContactInfo],
     ),
-    AuthModule
+    AuthModule,
+    ImageModule,
   ],
   controllers: [RoomsController],
   providers: [RoomsService],

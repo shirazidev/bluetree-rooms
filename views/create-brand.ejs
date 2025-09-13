@@ -19,7 +19,7 @@
 <body>
     <div class="container">
         <h1>Create Brand</h1>
-        <form action="/rooms/brands" method="POST">
+        <form action="/rooms/brands" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Brand Name</label>
                 <input type="text" id="name" name="name" required>
@@ -31,8 +31,8 @@
             </div>
 
             <div class="form-group">
-                <label for="logoUrl">Logo URL</label>
-                <input type="text" id="logoUrl" name="logoUrl">
+                <label for="logo">Logo</label>
+                <input type="file" id="logo" name="logo">
             </div>
 
             <h2>About Us</h2>
@@ -70,8 +70,8 @@
                     <input type="text" name="teamMembers[${index}][role]" required>
                 </div>
                 <div class="form-group">
-                    <label for="teamMembers[${index}][profileImageUrl]">Profile Image URL</label>
-                    <input type="text" name="teamMembers[${index}][profileImageUrl]" required>
+                    <label for="teamMembers[${index}][profileImage]">Profile Image</label>
+                    <input type="file" name="teamMemberImages">
                 </div>
                 <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
             `;

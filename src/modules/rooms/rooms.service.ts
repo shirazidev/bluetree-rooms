@@ -8,6 +8,7 @@ import { TeamMember } from './entities/team-member.entity';
 import { ContactInfo } from './entities/contact-info.entity';
 import { AboutUs } from './entities/about-us.entity';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { ImageService } from '../image/image.service';
 
 @Injectable()
 export class RoomsService {
@@ -23,6 +24,7 @@ export class RoomsService {
     @InjectRepository(AboutUs)
     private aboutUsRepository: Repository<AboutUs>,
     private dataSource: DataSource,
+    private readonly imageService: ImageService,
   ) {}
   async findBySlugWithBrand(slug: string) {
     const room = await this.roomRepository.findOne({
@@ -40,21 +42,37 @@ export class RoomsService {
     return room;
   }
 
-  async createBrand(createBrandDto: CreateBrandDto): Promise<Brand> {
+  async createBrand(
+    createBrandDto: CreateBrandDto,
+    logo: Express.Multer.File,
+    teamMemberImages: Express.Multer.File[],
+  ): Promise<Brand> {
     return this.dataSource.transaction(async (manager) => {
       const { teamMembers, contactInfos, aboutUs, ...brandData } =
         createBrandDto;
 
       const brand = manager.create(Brand, brandData);
+      if (logo) {
+        const logoImage = await this.imageService.createImage(logo);
+        brand.logoUrl = logoImage.url;
+      }
       await manager.save(brand);
 
       const aboutUsEntity = manager.create(AboutUs, { ...aboutUs, brand });
       await manager.save(aboutUsEntity);
 
-      const teamMemberEntities = teamMembers.map((tm) =>
-        manager.create(TeamMember, { ...tm, brand }),
+      const teamMemberEntities = await Promise.all(
+        teamMembers.map(async (tm, index) => {
+          const teamMember = manager.create(TeamMember, { ...tm, brand });
+          if (teamMemberImages && teamMemberImages[index]) {
+            const profileImage = await this.imageService.createImage(
+              teamMemberImages[index],
+            );
+            teamMember.profileImageUrl = profileImage.url;
+          }
+          return manager.save(teamMember);
+        }),
       );
-      await manager.save(teamMemberEntities);
 
       const contactInfoEntities = contactInfos.map((ci) =>
         manager.create(ContactInfo, { ...ci, brand }),
@@ -80,7 +98,7 @@ export class RoomsService {
     return room;
   }
   async createRoom(createRoomDto: CreateRoomDto) {
-  const room = this.roomRepository.create(createRoomDto);
-  return this.roomRepository.save(room);
-}
+    const room = this.roomRepository.create(createRoomDto);
+    return this.roomRepository.save(room);
+  }
 }

@@ -11,9 +11,10 @@ export class CreateTeamMemberDto {
   @IsString()
   role: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  profileImageUrl: string;
+  profileImageUrl?: string;
 }
 
 export class CreateContactInfoDto {
