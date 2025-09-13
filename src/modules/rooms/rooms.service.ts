@@ -210,7 +210,7 @@ export class RoomsService {
   async disconnectBrandFromRoom(roomId: number) {
     const room = await this.roomRepository.findOne({ where: { id: roomId } });
     if (!room) throw new NotFoundException('Room not found');
-    room.brand = null;
+    room.brandId = null;
     await this.roomRepository.save(room);
     return room;
   }
@@ -235,12 +235,28 @@ export class RoomsService {
         throw new NotFoundException(`Brand with ID ${brandId} not found`);
       }
 
-      await manager.update(Room, { brand: { id: brandId } }, { brand: null });
+      // Disconnect the brand from any associated rooms
+      await manager.update(Room, { brandId }, { brandId: null });
 
       // Manually delete related entities
-      await manager.delete(TeamMember, { brand: { id: brandId } });
-      await manager.delete(ContactInfo, { brand: { id: brandId } });
-      await manager.delete(AboutUs, { brand: { id: brandId } });
+      await manager
+        .createQueryBuilder()
+        .delete()
+        .from(TeamMember)
+        .where('brandId = :brandId', { brandId })
+        .execute();
+      await manager
+        .createQueryBuilder()
+        .delete()
+        .from(ContactInfo)
+        .where('brandId = :brandId', { brandId })
+        .execute();
+      await manager
+        .createQueryBuilder()
+        .delete()
+        .from(AboutUs)
+        .where('brandId = :brandId', { brandId })
+        .execute();
 
       // Finally, delete the brand itself
       await manager.delete(Brand, { id: brandId });
