@@ -4,15 +4,13 @@ import { ImageController } from './image.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImageEntity } from './entities/image.entity';
 import { MulterModule } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { imageFileFilter, multerStorage } from '../../common/utils/multer.util';
+import { multerProfileStorage } from '../../common/utils/multer.util';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ImageEntity]),
     MulterModule.register({
-      storage: diskStorage(multerStorage('images')),
-      fileFilter: imageFileFilter,
+      storage: multerProfileStorage('images'),
     }),
   ],
   controllers: [ImageController],
