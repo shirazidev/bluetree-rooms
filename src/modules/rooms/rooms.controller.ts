@@ -39,7 +39,7 @@ export class RoomsController {
   }
 
   @Post('brands')
-  @AuthDecorator()
+  // @AuthDecorator()
   @UseInterceptors(
     FileFieldsInterceptor(
       [
