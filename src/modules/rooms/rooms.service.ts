@@ -9,6 +9,7 @@ import { ContactInfo } from './entities/contact-info.entity';
 import { AboutUs } from './entities/about-us.entity';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { ImageService } from '../image/image.service';
+import { ImageDto } from '../image/dto/create-image.dto';
 
 @Injectable()
 export class RoomsService {
@@ -53,10 +54,12 @@ export class RoomsService {
 
       const brand = manager.create(Brand, brandData);
       if (logo) {
-        const logoImage = await this.imageService.create(
-          { name: brandData.name, alt: brandData.name },
-          logo,
-        );
+        const imageDto: ImageDto = {
+          name: brandData.name,
+          alt: brandData.name,
+          image: logo.originalname,
+        };
+        const logoImage = await this.imageService.create(imageDto, logo);
         brand.logoUrl = logoImage.data.location;
       }
       await manager.save(brand);
@@ -64,27 +67,37 @@ export class RoomsService {
       const aboutUsEntity = manager.create(AboutUs, { ...aboutUs, brand });
       await manager.save(aboutUsEntity);
 
-      const teamMemberEntities = await Promise.all(
-        teamMembers.map(async (tm, index) => {
-          const teamMember = manager.create(TeamMember, { ...tm, brand });
-          if (teamMemberImages && teamMemberImages[index]) {
-            const profileImage = await this.imageService.create(
-              { name: tm.fullName, alt: tm.fullName },
-              teamMemberImages[index],
-            );
-            teamMember.profileImageUrl = profileImage.data.location;
-          }
-          return manager.save(teamMember);
-        }),
-      );
+      if (teamMembers && teamMembers.length > 0) {
+        const teamMemberEntities = await Promise.all(
+          teamMembers.map(async (tm, index) => {
+            const teamMember = manager.create(TeamMember, { ...tm, brand });
+            if (teamMemberImages && teamMemberImages[index]) {
+              const imageFile = teamMemberImages[index];
+              const imageDto: ImageDto = {
+                name: tm.fullName,
+                alt: tm.fullName,
+                image: imageFile.originalname,
+              };
+              const profileImage = await this.imageService.create(
+                imageDto,
+                imageFile,
+              );
+              teamMember.profileImageUrl = profileImage.data.location;
+            }
+            return manager.save(teamMember);
+          }),
+        );
+        brand.teamMembers = teamMemberEntities;
+      }
 
-      const contactInfoEntities = contactInfos.map((ci) =>
-        manager.create(ContactInfo, { ...ci, brand }),
-      );
-      await manager.save(contactInfoEntities);
+      if (contactInfos && contactInfos.length > 0) {
+        const contactInfoEntities = contactInfos.map((ci) =>
+          manager.create(ContactInfo, { ...ci, brand }),
+        );
+        await manager.save(contactInfoEntities);
+        brand.contactInfos = contactInfoEntities;
+      }
 
-      brand.teamMembers = teamMemberEntities;
-      brand.contactInfos = contactInfoEntities;
       brand.aboutUs = aboutUsEntity;
 
       return brand;
