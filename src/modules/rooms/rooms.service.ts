@@ -230,36 +230,12 @@ export class RoomsService {
 
   async deleteBrand(brandId: number): Promise<void> {
     await this.dataSource.transaction(async (manager) => {
-      const brand = await manager.findOne(Brand, { where: { id: brandId } });
-      if (!brand) {
-        throw new NotFoundException(`Brand with ID ${brandId} not found`);
-      }
-
-      // Disconnect the brand from any associated rooms
-      await manager.update(Room, { brandId }, { brandId: null });
-
-      // Manually delete related entities
-      await manager
-        .createQueryBuilder()
-        .delete()
-        .from(TeamMember)
-        .where('brandId = :brandId', { brandId })
-        .execute();
-      await manager
-        .createQueryBuilder()
-        .delete()
-        .from(ContactInfo)
-        .where('brandId = :brandId', { brandId })
-        .execute();
-      await manager
-        .createQueryBuilder()
-        .delete()
-        .from(AboutUs)
-        .where('brandId = :brandId', { brandId })
-        .execute();
-
-      // Finally, delete the brand itself
-      await manager.delete(Brand, { id: brandId });
+        const brand = await manager.findOneBy(Brand, { id: brandId });
+        if (!brand) {
+            throw new NotFoundException(`Brand with ID ${brandId} not found`);
+        }
+        await manager.update(Room, { brandId }, { brandId: null });
+        await manager.remove(brand);
     });
   }
 }

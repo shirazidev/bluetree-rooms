@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { TeamMember } from './team-member.entity';
 import { ContactInfo } from './contact-info.entity';
 import { AboutUs } from './about-us.entity';
@@ -20,13 +20,13 @@ export class Brand extends BaseEntity {
   @Column({ nullable: true })
   logoUrl: string;
 
-  @OneToMany(() => TeamMember, teamMember => teamMember.brand)
+  @OneToMany(() => TeamMember, teamMember => teamMember.brand, { cascade: true })
   teamMembers: TeamMember[];
 
-  @OneToMany(() => ContactInfo, contactInfo => contactInfo.brand)
+  @OneToMany(() => ContactInfo, contactInfo => contactInfo.brand, { cascade: true })
   contactInfos: ContactInfo[];
 
-  @OneToOne(() => AboutUs, aboutUs => aboutUs.brand)
+  @OneToOne(() => AboutUs, aboutUs => aboutUs.brand, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   aboutUs: AboutUs;
 }
