@@ -9,6 +9,7 @@ import { TypeOrmDbConfig } from './configs/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { ImageModule } from './modules/image/image.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ImageModule } from './modules/image/image.module';
     UserModule,
     RoomsModule,
     ImageModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

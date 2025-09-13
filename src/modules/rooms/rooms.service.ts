@@ -118,4 +118,12 @@ export class RoomsService {
     const room = this.roomRepository.create(createRoomDto);
     return this.roomRepository.save(room);
   }
+
+  async findAllRooms(): Promise<Room[]> {
+    return this.roomRepository.find({ relations: ['brand'] });
+  }
+
+  async findAllBrands(): Promise<Brand[]> {
+    return this.brandRepository.find();
+  }
 }
