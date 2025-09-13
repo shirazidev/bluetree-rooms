@@ -15,36 +15,19 @@
         ]
       }
     },
-    "/user/signup": {
-      "post": {
-        "operationId": "AuthController_signup",
+    "/auth/login": {
+      "get": {
+        "operationId": "AuthController_loginPage",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/SignupDto"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignupDto"
-              }
-            }
-          }
-        },
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
         "tags": [
           "Auth"
         ]
-      }
-    },
-    "/user/login": {
+      },
       "post": {
         "operationId": "AuthController_login",
         "parameters": [],
@@ -59,6 +42,49 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "operationId": "AuthController_signup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupDto"
               }
             }
           }
@@ -219,12 +245,128 @@
         ]
       }
     },
+    "/rooms/connect-brand": {
+      "post": {
+        "operationId": "RoomsController_connectBrandToRoomFromAdmin",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
+    "/rooms/{roomId}/disconnect-brand": {
+      "post": {
+        "operationId": "RoomsController_disconnectBrandFromRoom",
+        "parameters": [
+          {
+            "name": "roomId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
     "/rooms/brands/create": {
       "get": {
         "operationId": "RoomsController_createBrandPage",
         "parameters": [],
         "responses": {
           "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
+    "/rooms/brands/{id}/edit": {
+      "get": {
+        "operationId": "RoomsController_editBrandPage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
+    "/rooms/brands/{id}/update": {
+      "post": {
+        "operationId": "RoomsController_updateBrand",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBrandDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
+    "/rooms/brands/{id}/delete": {
+      "post": {
+        "operationId": "RoomsController_deleteBrand",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
             "description": ""
           }
         },
@@ -306,17 +448,12 @@
             "description": ""
           }
         },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
         "tags": [
           "Rooms"
         ]
       }
     },
-    "/rooms/create": {
+    "/rooms": {
       "post": {
         "operationId": "RoomsController_createRoom",
         "parameters": [],
@@ -335,11 +472,29 @@
             "description": ""
           }
         },
-        "security": [
+        "tags": [
+          "Rooms"
+        ]
+      }
+    },
+    "/rooms/{id}": {
+      "delete": {
+        "operationId": "RoomsController_deleteRoom",
+        "parameters": [
           {
-            "Authorization": []
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
         "tags": [
           "Rooms"
         ]
@@ -652,6 +807,10 @@
             "type": "string"
           }
         }
+      },
+      "UpdateBrandDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreateTeamMemberDto": {
         "type": "object",
