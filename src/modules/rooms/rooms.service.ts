@@ -206,6 +206,15 @@ export class RoomsService {
     await this.roomRepository.save(room);
     return room;
   }
+
+  async disconnectBrandFromRoom(roomId: number) {
+    const room = await this.roomRepository.findOne({ where: { id: roomId } });
+    if (!room) throw new NotFoundException('Room not found');
+    room.brand = null;
+    await this.roomRepository.save(room);
+    return room;
+  }
+
   async createRoom(createRoomDto: CreateRoomDto) {
     const room = this.roomRepository.create(createRoomDto);
     return this.roomRepository.save(room);
@@ -225,6 +234,8 @@ export class RoomsService {
       if (!brand) {
         throw new NotFoundException(`Brand with ID ${brandId} not found`);
       }
+
+      await manager.update(Room, { brand: { id: brandId } }, { brand: null });
 
       // Manually delete related entities
       await manager.delete(TeamMember, { brand: { id: brandId } });

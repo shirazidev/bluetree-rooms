@@ -35,6 +35,16 @@ export class RoomsController {
     );
     res.redirect('/admin');
   }
+
+  @Post(':roomId/disconnect-brand')
+  async disconnectBrandFromRoom(
+    @Param('roomId') roomId: string,
+    @Res() res: Response,
+  ) {
+    await this.roomsService.disconnectBrandFromRoom(parseInt(roomId, 10));
+    res.redirect('/admin');
+  }
+
   @Get('brands/create')
   @Render('create-brand')
   createBrandPage() {
