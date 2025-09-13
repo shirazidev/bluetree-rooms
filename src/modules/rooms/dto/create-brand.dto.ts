@@ -1,4 +1,4 @@
-import { IsString, IsOptional, ValidateNested, IsArray } from 'class-validator';
+import { IsString, IsOptional, ValidateNested, IsArray, ArrayMinSize, ArrayMaxSize } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -63,12 +63,15 @@ export class CreateBrandDto {
   @ApiProperty({ type: [CreateTeamMemberDto] })
   @IsArray()
   @ValidateNested({ each: true })
+  @ArrayMinSize(1)
   @Type(() => CreateTeamMemberDto)
   teamMembers: CreateTeamMemberDto[];
 
   @ApiProperty({ type: [CreateContactInfoDto] })
   @IsArray()
   @ValidateNested({ each: true })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(1)
   @Type(() => CreateContactInfoDto)
   contactInfos: CreateContactInfoDto[];
 

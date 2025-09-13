@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Brand</title>
+    <title>ایجاد برند جدید</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style type="text/tailwindcss">
@@ -34,54 +34,74 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex justify-center bg-brand">
+<body class="min-h-screen flex justify-center bg-brand font-anjoman-medium">
     <div class="w-full max-w-lg shadow-lg overflow-hidden flex flex-col bg-brand p-6">
-        <h1 class="text-3xl font-anjoman-black mb-6 text-center" style="color: #051f44">Create a New Brand</h1>
+        <h1 class="text-3xl font-anjoman-black mb-6 text-center" style="color: #051f44">ایجاد برند جدید</h1>
 
         <form action="/rooms/brands" method="POST" enctype="multipart/form-data" class="space-y-6">
 
-            <!-- Brand Information -->
+            <!-- اطلاعات برند -->
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">Brand Information</h2>
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">اطلاعات برند</h2>
                 <div class="form-group">
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Brand Name</label>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">نام برند</label>
                     <input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div class="form-group">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">توضیحات</label>
                     <textarea id="description" name="description" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                    <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">لوگو</label>
                     <input type="file" id="logo" name="logo" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                    <img id="logo-preview" src="#" alt="Logo Preview" class="hidden mt-4 w-24 h-24 object-cover rounded-full mx-auto"/>
+                    <img id="logo-preview" src="#" alt="پیش‌نمایش لوگو" class="hidden mt-4 w-24 h-24 object-cover rounded-full mx-auto"/>
                 </div>
             </div>
 
-            <!-- About Us -->
+            <!-- درباره ما -->
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">About Us</h2>
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">درباره ما</h2>
                 <div class="form-group">
-                    <label for="aboutUsContent" class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                    <label for="aboutUsContent" class="block text-sm font-medium text-gray-700 mb-1">محتوا</label>
                     <textarea id="aboutUsContent" name="aboutUs[content]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
                 </div>
             </div>
 
-            <!-- Team Members -->
+            <!-- اعضای تیم -->
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">Team Members</h2>
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">اعضای تیم</h2>
                 <div id="team-members" class="space-y-4"></div>
-                <button type="button" id="add-team-member" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Add Team Member</button>
+                <button type="button" id="add-team-member" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">افزودن عضو تیم</button>
             </div>
 
-            <!-- Contact Information -->
+            <!-- اطلاعات تماس -->
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">Contact Information</h2>
-                <div id="contact-infos" class="space-y-4"></div>
-                <button type="button" id="add-contact-info" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Add Contact Info</button>
+                <h2 class="text-xl font-anjoman-extrabold mb-4 text-gray-700">اطلاعات تماس</h2>
+                <div id="contact-infos" class="space-y-4">
+                    <!-- Contact Info 1 -->
+                    <div class="nested-group p-4 border border-gray-200 rounded-lg">
+                        <h3 class="text-lg font-bold mb-2">اطلاعات تماس</h3>
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">لینکدین</label>
+                            <input type="text" name="contactInfos[0][linkedin]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="form-group mt-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">تلفن</label>
+                            <input type="text" name="contactInfos[0][phone]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="form-group mt-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">اینستاگرام</label>
+                            <input type="text" name="contactInfos[0][instagram]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="form-group mt-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">تلگرام</label>
+                            <input type="text" name="contactInfos[0][telegram]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <button type="submit" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Create Brand</button>
+            <button type="submit" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">ایجاد برند</button>
         </form>
     </div>
 
@@ -96,60 +116,34 @@
             }
         });
 
-        // Dynamically add team members
-        document.getElementById('add-team-member').addEventListener('click', () => {
-            const container = document.getElementById('team-members');
-            const index = container.children.length;
+        const addTeamMemberButton = document.getElementById('add-team-member');
+        const teamMembersContainer = document.getElementById('team-members');
+
+        function addTeamMember(isFirst = false) {
+            const index = teamMembersContainer.children.length;
             const div = document.createElement('div');
             div.classList.add('nested-group', 'p-4', 'border', 'border-gray-200', 'rounded-lg');
             div.innerHTML = `
-                <h3 class="text-lg font-bold mb-2">Team Member ${index + 1}</h3>
+                <h3 class="text-lg font-bold mb-2">عضو تیم ${index + 1}</h3>
                 <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">نام کامل</label>
                     <input type="text" name="teamMembers[${index}][fullName]" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
                 <div class="form-group mt-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">نقش</label>
                     <input type="text" name="teamMembers[${index}][role]" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 </div>
                 <div class="form-group mt-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Profile Image</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">عکس پروفایل</label>
                     <input type="file" name="teamMemberImages" class="w-full px-3 py-2 border border-gray-300 rounded-lg" onchange="previewTeamMemberImage(this, ${index})">
-                    <img id="team-member-preview-${index}" src="#" alt="Image Preview" class="hidden mt-2 w-20 h-20 object-cover rounded-full"/>
+                    <img id="team-member-preview-${index}" src="#" alt="پیش‌نمایش تصویر" class="hidden mt-2 w-20 h-20 object-cover rounded-full"/>
                 </div>
-                <button type="button" class="mt-2 px-3 py-1 bg-red-600 text-white rounded-lg text-sm" onclick="this.parentElement.remove()">Remove</button>
+                ${!isFirst ? '<button type="button" class="mt-2 px-3 py-1 bg-red-600 text-white rounded-lg text-sm" onclick="this.parentElement.remove()">حذف</button>' : ''}
             `;
-            container.appendChild(div);
-        });
+            teamMembersContainer.appendChild(div);
+        }
 
-        // Dynamically add contact info
-        document.getElementById('add-contact-info').addEventListener('click', () => {
-            const container = document.getElementById('contact-infos');
-            const index = container.children.length;
-            const div = document.createElement('div');
-            div.classList.add('nested-group', 'p-4', 'border', 'border-gray-200', 'rounded-lg');
-            div.innerHTML = `
-                <h3 class="text-lg font-bold mb-2">Contact Info ${index + 1}</h3>
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
-                    <input type="text" name="contactInfos[${index}][linkedin]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-                <div class="form-group mt-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input type="text" name="contactInfos[${index}][phone]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-                <div class="form-group mt-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
-                    <input type="text" name="contactInfos[${index}][instagram]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-                <div class="form-group mt-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Telegram</label>
-                    <input type="text" name="contactInfos[${index}][telegram]" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-                <button type="button" class="mt-2 px-3 py-1 bg-red-600 text-white rounded-lg text-sm" onclick="this.parentElement.remove()">Remove</button>
-            `;
-            container.appendChild(div);
-        });
+        addTeamMemberButton.addEventListener('click', () => addTeamMember());
 
         // Preview for team member images
         function previewTeamMemberImage(input, index) {
@@ -160,6 +154,9 @@
                 preview.classList.remove('hidden');
             }
         }
+        
+        // Load one team member by default
+        addTeamMember(true);
     </script>
 </body>
 </html>
