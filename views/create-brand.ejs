@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Brand</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: .5rem; }
+        input, textarea { width: 100%; padding: .5rem; }
+        .nested-group { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; }
+        .nested-group h3 { margin-top: 0; }
+        .remove-btn { margin-top: .5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Brand</h1>
+        <form action="/rooms/brands" method="POST">
+            <div class="form-group">
+                <label for="name">Brand Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="logoUrl">Logo URL</label>
+                <input type="text" id="logoUrl" name="logoUrl">
+            </div>
+
+            <h2>About Us</h2>
+            <div class="form-group">
+                <label for="aboutUsContent">Content</label>
+                <textarea id="aboutUsContent" name="aboutUs[content]"></textarea>
+            </div>
+
+            <h2>Team Members</h2>
+            <div id="team-members"></div>
+            <button type="button" id="add-team-member">Add Team Member</button>
+
+            <h2>Contact Information</h2>
+            <div id="contact-infos"></div>
+            <button type="button" id="add-contact-info">Add Contact Info</button>
+
+            <button type="submit">Create Brand</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('add-team-member').addEventListener('click', () => {
+            const container = document.getElementById('team-members');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.classList.add('nested-group');
+            div.innerHTML = `
+                <h3>Team Member ${index + 1}</h3>
+                <div class="form-group">
+                    <label for="teamMembers[${index}][fullName]">Full Name</label>
+                    <input type="text" name="teamMembers[${index}][fullName]" required>
+                </div>
+                <div class="form-group">
+                    <label for="teamMembers[${index}][role]">Role</label>
+                    <input type="text" name="teamMembers[${index}][role]" required>
+                </div>
+                <div class="form-group">
+                    <label for="teamMembers[${index}][profileImageUrl]">Profile Image URL</label>
+                    <input type="text" name="teamMembers[${index}][profileImageUrl]" required>
+                </div>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        });
+
+        document.getElementById('add-contact-info').addEventListener('click', () => {
+            const container = document.getElementById('contact-infos');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.classList.add('nested-group');
+            div.innerHTML = `
+                <h3>Contact Info ${index + 1}</h3>
+                <div class="form-group">
+                    <label for="contactInfos[${index}][linkedin]">LinkedIn</label>
+                    <input type="text" name="contactInfos[${index}][linkedin]">
+                </div>
+                <div class="form-group">
+                    <label for="contactInfos[${index}][phone]">Phone</label>
+                    <input type="text" name="contactInfos[${index}][phone]">
+                </div>
+                <div class="form-group">
+                    <label for="contactInfos[${index}][instagram]">Instagram</label>
+                    <input type="text" name="contactInfos[${index}][instagram]">
+                </div>
+                <div class="form-group">
+                    <label for="contactInfos[${index}][telegram]">Telegram</label>
+                    <input type="text" name="contactInfos[${index}][telegram]">
+                </div>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        });
+    </script>
+</body>
+</html>
