@@ -161,7 +161,7 @@ export class RoomsController {
     res.redirect('/admin');
   }
 
-  @Delete(':id')
+  @Get('/delete/:id')
   @UseGuards(AuthGuard)
   async deleteRoom(@Param('id') id: string, @Res() res: Response) {
     await this.roomsService.deleteRoom(parseInt(id, 10));

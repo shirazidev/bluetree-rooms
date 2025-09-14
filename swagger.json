@@ -477,8 +477,8 @@
         ]
       }
     },
-    "/rooms/{id}": {
-      "delete": {
+    "/rooms/delete/{id}": {
+      "get": {
         "operationId": "RoomsController_deleteRoom",
         "parameters": [
           {
