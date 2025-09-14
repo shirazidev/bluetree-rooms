@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Brand - <%= brand.name %></title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
     <div class="container mx-auto p-8">
         <h1 class="text-4xl font-bold mb-8 text-center">Edit Brand: <%= brand.name %></h1>
 
-        <form action="/rooms/brands/<%= brand.id %>/update" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+        <form id="edit-brand-form" action="/rooms/brands/<%= brand.id %>/update" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
 
             <!-- Brand Details -->
             <div class="mb-6">
@@ -95,5 +96,32 @@
             </div>
         </form>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#edit-brand-form').on('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // Important! Tells jQuery not to process the data
+                    contentType: false, // Important! Tells jQuery not to set contentType
+                    success: function(response) {
+                        alert('Brand updated successfully!');
+                        // Optionally, redirect or update UI
+                         window.location.href = '/admin';
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : 'An error occurred.';
+                        alert('Error updating brand: ' + errorMessage);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
