@@ -26,6 +26,7 @@ export class Brand extends BaseEntity {
   @OneToMany(() => ContactInfo, contactInfo => contactInfo.brand, { cascade: true })
   contactInfos: ContactInfo[];
 
+
   @OneToOne(() => AboutUs, aboutUs => aboutUs.brand, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   aboutUs: AboutUs;
