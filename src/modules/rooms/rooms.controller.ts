@@ -20,10 +20,19 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerProfileStorage } from '../../common/utils/multer.util';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { CreateFullBrandDto } from './dto/create-full-brand.dto';
 
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
+
+  @Post('brands/create-full')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FileFieldsInterceptor([])) // Use interceptor for multipart/form-data
+  async createFullBrand(@Body() createFullBrandDto: CreateFullBrandDto) {
+    return this.roomsService.createFullBrand(createFullBrandDto);
+  }
 
   @Post('connect-brand')
   @UseGuards(AuthGuard)
@@ -42,12 +51,6 @@ export class RoomsController {
   @HttpCode(HttpStatus.OK)
   async disconnectBrandFromRoom(@Param('roomId') roomId: string) {
     return this.roomsService.disconnectBrandFromRoom(parseInt(roomId, 10));
-  }
-
-  @Get('brands/create')
-  @Render('create-brand')
-  createBrandPage() {
-    return {};
   }
 
   @Get('brands/:id/edit')
@@ -78,12 +81,7 @@ export class RoomsController {
     @UploadedFiles()
     files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
   ) {
-    return this.roomsService.updateBrand(
-      parseInt(id, 10),
-      updateBrandDto,
-      files.logo ? files.logo[0] : null,
-      files.teamMemberImages || [],
-    );
+    return this.roomsService.updateBrand(parseInt(id, 10), updateBrandDto, files);
   }
 
   @Delete('brands/:id')
@@ -117,27 +115,8 @@ export class RoomsController {
   @Post('brands')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'logo', maxCount: 1 },
-        { name: 'teamMemberImages', maxCount: 10 },
-      ],
-      {
-        storage: multerProfileStorage('brands'),
-      },
-    ),
-  )
-  async createBrand(
-    @Body() createBrandDto: CreateBrandDto,
-    @UploadedFiles()
-    files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
-  ) {
-    return this.roomsService.createBrand(
-      createBrandDto,
-      files.logo ? files.logo[0] : null,
-      files.teamMemberImages || [],
-    );
+  async createBrand(@Body() createBrandDto: CreateBrandDto) {
+    return this.roomsService.createBrand(createBrandDto);
   }
 
   @Patch(':roomId/connect-brand/:brandId')

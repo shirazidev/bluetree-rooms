@@ -85,7 +85,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap"><%= brand.id %></td>
                                 <td class="px-6 py-4 whitespace-nowrap"><%= brand.name %></td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-<!--                                    <a href="/rooms/brands/<%= brand.id %>/edit" class="text-blue-600 hover:underline mr-4">ویرایش</a>-->
+                                    <a href="/rooms/brands/<%= brand.id %>/edit" class="text-blue-600 hover:underline mr-4">ویرایش</a>
                                     <button class="delete-brand-btn text-red-600 hover:underline" data-brand-id="<%= brand.id %>">حذف</button>
                                 </td>
                             </tr>
@@ -121,30 +121,114 @@
     </div>
 
     <!-- Create Brand Modal -->
-    <div id="create-brand-modal" class="hidden fixed z-10 inset-0 overflow-y-auto">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form id="create-brand-form" class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">ایجاد برند</h3>
-                    <div class="mb-4">
-                        <label for="name" class="block text-sm font-medium text-gray-700">نام برند</label>
-                        <input type="text" name="name" id="name" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+<div id="create-brand-modal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+            <form id="create-brand-form" class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">ایجاد برند</h3>
+                
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700">نام برند</label>
+                    <input type="text" name="name" id="name" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+
+                <!-- Dynamic Contact Info -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-md font-bold">اطلاعات تماس</h4>
+                        <button type="button" id="add-contact-info-btn-modal" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">+ افزودن تماس</button>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">ایجاد</button>
-                        <button type="button" id="close-modal-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">انصراف</button>
-                    </div>
-                </form>
-            </div>
+                    <div id="contact-infos-container-modal" class="space-y-4"></div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">ایجاد</button>
+                    <button type="button" id="close-modal-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">انصراف</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
 
     <script>
         $(document).ready(function() {
+
+            // --- Create Brand Modal Logic ---
+            const contactTypes = ["Phone", "Email", "LinkedIn", "Instagram", "Telegram", "Website"];
+            let contactInfoModalIndex = 0;
+
+            $('#create-brand-modal-btn').on('click', function() {
+                $('#create-brand-modal').removeClass('hidden');
+            });
+
+            $('#close-modal-btn').on('click', function() {
+                $('#create-brand-modal').addClass('hidden');
+                // Reset form on close
+                $('#create-brand-form')[0].reset();
+                $('#contact-infos-container-modal').empty();
+                contactInfoModalIndex = 0;
+            });
+
+            $('#add-contact-info-btn-modal').on('click', function() {
+                const options = contactTypes.map(type => `<option value="${type}">${type}</option>`).join('');
+                const newContactHtml = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 border rounded-lg relative contact-info-group">
+                        <button type="button" class="absolute top-2 right-2 remove-btn text-red-500 hover:text-red-700 font-bold">X</button>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Type</label>
+                            <select name="contactInfos[${contactInfoModalIndex}][type]" class="w-full px-4 py-2 border border-gray-300 rounded-lg">${options}</select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Value</label>
+                            <input type="text" name="contactInfos[${contactInfoModalIndex}][value]" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                `;
+                $('#contact-infos-container-modal').append(newContactHtml);
+                contactInfoModalIndex++;
+            });
+
+            $('#contact-infos-container-modal').on('click', '.remove-btn', function() {
+                $(this).closest('.contact-info-group').remove();
+            });
+            
+            $('#create-brand-form').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: '/rooms/brands/create-full',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(brand) {
+                        $('#brands-tbody').append(`
+                            <tr id="brand-${brand.id}">
+                                <td class="px-6 py-4 whitespace-nowrap">${brand.id}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${brand.name}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="/rooms/brands/${brand.id}/edit" class="text-blue-600 hover:underline mr-4">ویرایش</a>
+                                    <button class="delete-brand-btn text-red-600 hover:underline" data-brand-id="${brand.id}">حذف</button>
+                                </td>
+                            </tr>
+                        `);
+                        $('#brandId').append(`<option value="${brand.id}">${brand.name}</option>`);
+                        $('#close-modal-btn').click(); // Close and reset modal
+                    },
+                    error: function(jqXHR) {
+                        const error = jqXHR.responseJSON ? jqXHR.responseJSON.message : 'خطا در ایجاد برند';
+                        alert(error);
+                    }
+                });
+            });
+
+
             // Create Room
             $('#create-room-form').on('submit', function(e) {
                 e.preventDefault();
@@ -208,44 +292,6 @@
                         }
                     });
                 }
-            });
-
-            // Create Brand Modal
-            $('#create-brand-modal-btn').on('click', function() {
-                $('#create-brand-modal').removeClass('hidden');
-            });
-
-            $('#close-modal-btn').on('click', function() {
-                $('#create-brand-modal').addClass('hidden');
-            });
-
-            // Create Brand
-            $('#create-brand-form').on('submit', function(e) {
-                e.preventDefault();
-                const name = $(this).find('input[name="name"]').val();
-                $.ajax({
-                    url: '/rooms/brands',
-                    type: 'POST',
-                    data: { name },
-                    success: function(brand) {
-                        $('#brands-tbody').append(`
-                            <tr id="brand-${brand.id}">
-                                <td class="px-6 py-4 whitespace-nowrap">${brand.id}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">${brand.name}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="/rooms/brands/${brand.id}/edit" class="text-blue-600 hover:underline mr-4">ویرایش</a>
-                                    <button class="delete-brand-btn text-red-600 hover:underline" data-brand-id="${brand.id}">حذف</button>
-                                </td>
-                            </tr>
-                        `);
-                        $('#brandId').append(`<option value="${brand.id}">${brand.name}</option>`);
-                        $('#create-brand-modal').addClass('hidden');
-                        $('#create-brand-form input[name="name"]').val('');
-                    },
-                    error: function() {
-                        alert('خطا در ایجاد برند');
-                    }
-                });
             });
 
             // Delete Brand

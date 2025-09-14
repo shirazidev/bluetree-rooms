@@ -10,7 +10,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { ImageService } from '../image/image.service';
-import { ImageDto } from '../image/dto/create-image.dto';
+import { CreateFullBrandDto } from './dto/create-full-brand.dto';
 
 @Injectable()
 export class RoomsService {
@@ -22,6 +22,23 @@ export class RoomsService {
     private dataSource: DataSource,
     private readonly imageService: ImageService,
   ) {}
+
+  async createFullBrand(createFullBrandDto: CreateFullBrandDto): Promise<Brand> {
+    return this.dataSource.transaction(async (manager) => {
+      const { name, contactInfos } = createFullBrandDto;
+      
+      const brand = manager.create(Brand, { name });
+      
+      if (contactInfos && contactInfos.length > 0) {
+        const contactInfoEntities = contactInfos.map((ci) => 
+          manager.create(ContactInfo, { ...ci, brand })
+        );
+        brand.contactInfos = contactInfoEntities;
+      }
+      
+      return manager.save(brand);
+    });
+  }
 
   async findBySlugWithBrand(slug: string): Promise<Room> {
     const room = await this.roomRepository.findOne({
@@ -56,7 +73,7 @@ export class RoomsService {
   async updateBrand(
     brandId: number,
     updateBrandDto: UpdateBrandDto,
-    files: { logo?: Express.Multer.File[], teamMemberImages?: Express.Multer.File[] },
+    files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
   ): Promise<Brand> {
     return this.dataSource.transaction(async (manager) => {
       const brand = await manager.findOne(Brand, {

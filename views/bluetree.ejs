@@ -135,7 +135,7 @@
               class="text-sm text-justify leading-relaxed mb-6 font-anjoman-medium font-medium"
               style="color: #084686"
             >
-              <%= aboutus?.content || 'اطلاعاتی ثبت نشده است.' %>
+              <%= aboutus?.description || 'اطلاعاتی ثبت نشده است.' %>
             </p>
           </section>
           <section class="mt-8 px-4 bg-brand">
@@ -174,7 +174,7 @@
                       class="text-xs font-anjoman-medium font-medium mx-4 mt-2"
                       style="color: #084686"
                     >
-                      <%= member.role %>
+                      <%= member.title %>
                     </p>
                   </div>
                 <% }); %>
@@ -194,39 +194,29 @@
             <div
               class="border-t border-gray-200 mt-4 pt-4 text-xs text-gray-500"
             ></div>
-            <div class="flex justify-center mt-6 gap-6">
+            <div class="flex justify-center flex-wrap mt-6 gap-6">
+              <% 
+                const contactIcons = {
+                  "Phone": { icon: "fas fa-phone", prefix: "tel:" },
+                  "Email": { icon: "fas fa-envelope", prefix: "mailto:" },
+                  "LinkedIn": { icon: "fab fa-linkedin-in", prefix: "https://www.linkedin.com/in/" },
+                  "Instagram": { icon: "fab fa-instagram", prefix: "https://www.instagram.com/" },
+                  "Telegram": { icon: "fab fa-telegram-plane", prefix: "https://t.me/" },
+                  "Website": { icon: "fas fa-globe", prefix: "" }
+                };
+              %>
               <% if (contactus && contactus.length) { %>
                 <% contactus.forEach(function(contact) { %>
-                  <% if (contact.instagram) { %>
+                  <% const details = contactIcons[contact.type]; %>
+                  <% if (details) { %>
+                    <% const url = details.prefix + contact.value; %>
                     <a
-                      href="<%= contact.instagram %>"
+                      href="<%= url %>"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
                     >
-                      <i class="fab fa-instagram text-xl" style="color: #051f44"></i>
-                    </a>
-                  <% } %>
-                  <% if (contact.telegram) { %>
-                    <a
-                      href="<%= contact.telegram %>"
-                      class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-                    >
-                      <i class="fab fa-telegram-plane text-xl" style="color: #051f44"></i>
-                    </a>
-                  <% } %>
-                  <% if (contact.phone) { %>
-                    <a
-                      href="tel:<%= contact.phone %>"
-                      class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-                    >
-                      <i class="fas fa-phone text-xl" style="color: #051f44"></i>
-                    </a>
-                  <% } %>
-                  <% if (contact.linkedin) { %>
-                    <a
-                      href="<%= contact.linkedin %>"
-                      class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-                    >
-                      <i class="fab fa-linkedin-in text-xl" style="color: #051f44"></i>
+                      <i class="<%= details.icon %> text-xl" style="color: #051f44"></i>
                     </a>
                   <% } %>
                 <% }); %>
