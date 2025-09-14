@@ -250,7 +250,7 @@
         "operationId": "RoomsController_connectBrandToRoomFromAdmin",
         "parameters": [],
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
@@ -273,7 +273,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
@@ -343,7 +343,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
@@ -352,8 +352,8 @@
         ]
       }
     },
-    "/rooms/brands/{id}/delete": {
-      "post": {
+    "/rooms/brands/{id}": {
+      "delete": {
         "operationId": "RoomsController_deleteBrand",
         "parameters": [
           {
@@ -366,7 +366,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
@@ -477,8 +477,8 @@
         ]
       }
     },
-    "/rooms/delete/{id}": {
-      "get": {
+    "/rooms/{id}": {
+      "delete": {
         "operationId": "RoomsController_deleteRoom",
         "parameters": [
           {
