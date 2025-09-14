@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پنل مدیریت</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         @font-face {
             font-family: 'Anjoman';
@@ -19,7 +20,7 @@
     <div class="container mx-auto p-8">
         <div class="flex justify-between items-center">
             <h1 class="text-4xl font-bold mb-8">پنل مدیریت</h1>
-            <form action="/auth/logout" method="POST">
+            <form id="logout-form" action="/auth/logout" method="POST">
                 <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">خروج</button>
             </form>
         </div>
@@ -27,7 +28,7 @@
         <!-- Create Room -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-8">
             <h2 class="text-2xl font-bold mb-4">ایجاد اتاق</h2>
-            <form action="/rooms" method="POST" class="flex items-center space-x-4">
+            <form id="create-room-form" class="flex items-center space-x-4">
                 <input type="text" name="slug" placeholder="اسلاگ اتاق جدید را وارد کنید" required class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                 <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">ایجاد</button>
             </form>
@@ -46,22 +47,17 @@
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عملیات</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody id="rooms-tbody" class="divide-y divide-gray-200">
                         <% rooms.forEach(room => { %>
-                            <tr>
+                            <tr id="room-<%= room.id %>">
                                 <td class="px-6 py-4 whitespace-nowrap"><%= room.id %></td>
                                 <td class="px-6 py-4 whitespace-nowrap"><%= room.slug %></td>
                                 <td class="px-6 py-4 whitespace-nowrap"><%= room.brand ? room.brand.name : 'N/A' %></td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <% if (room.brand) { %>
-                                        <form action="/rooms/<%= room.id %>/disconnect-brand" method="POST" class="inline-block" onsubmit="return confirm('آیا از قطع اتصال این برند اطمینان دارید؟');">
-                                            <button type="submit" class="text-red-600 hover:underline">قطع اتصال</button>
-                                        </form>
+                                        <button class="disconnect-brand-btn text-red-600 hover:underline" data-room-id="<%= room.id %>">قطع اتصال</button>
                                     <% } %>
-                                    <form action="/rooms/delete/<%= room.id %>" method="GET" class="inline-block" onsubmit="return confirm('آیا از حذف این اتاق اطمینان دارید؟');">
-                                        <input type="hidden" name="_method" value="GET">
-                                        <button type="submit" class="text-red-600 hover:underline ml-4">حذف</button>
-                                    </form>
+                                    <button class="delete-room-btn text-red-600 hover:underline ml-4" data-room-id="<%= room.id %>">حذف</button>
                                 </td>
                             </tr>
                         <% }); %>
@@ -73,7 +69,7 @@
         <!-- Brands List -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-8">
             <h2 class="text-2xl font-bold mb-4">لیست برندها</h2>
-            <a href="/rooms/brands/create" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-4 inline-block">ایجاد برند</a>
+            <button id="create-brand-modal-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-4 inline-block">ایجاد برند</button>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead class="bg-gray-50">
@@ -83,16 +79,14 @@
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عملیات</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody id="brands-tbody" class="divide-y divide-gray-200">
                         <% brands.forEach(brand => { %>
-                            <tr>
+                            <tr id="brand-<%= brand.id %>">
                                 <td class="px-6 py-4 whitespace-nowrap"><%= brand.id %></td>
                                 <td class="px-6 py-4 whitespace-nowrap"><%= brand.name %></td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <a href="/rooms/brands/<%= brand.id %>/edit" class="text-blue-600 hover:underline mr-4">ویرایش</a>
-                                    <form action="/rooms/brands/<%= brand.id %>/delete" method="POST" class="inline-block" onsubmit="return confirm('آیا از حذف این برند اطمینان دارید؟');">
-                                        <button type="submit" class="text-red-600 hover:underline">حذف</button>
-                                    </form>
+                                    <button class="delete-brand-btn text-red-600 hover:underline" data-brand-id="<%= brand.id %>">حذف</button>
                                 </td>
                             </tr>
                         <% }); %>
@@ -104,7 +98,7 @@
         <!-- Connect Brand to Room -->
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-bold mb-4">اتصال برند به اتاق</h2>
-            <form action="/rooms/connect-brand" method="POST" class="flex items-center space-x-4">
+            <form id="connect-brand-form" class="flex items-center space-x-4">
                 <div class="flex-grow">
                     <label for="roomId" class="block text-sm font-medium text-gray-700">اتاق</label>
                     <select id="roomId" name="roomId" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
@@ -125,5 +119,191 @@
             </form>
         </div>
     </div>
+
+    <!-- Create Brand Modal -->
+    <div id="create-brand-modal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <form id="create-brand-form" class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">ایجاد برند</h3>
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700">نام برند</label>
+                        <input type="text" name="name" id="name" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">ایجاد</button>
+                        <button type="button" id="close-modal-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">انصراف</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            function sendAjax(config) {
+                config.beforeSend = function(xhr) {
+                    const token = getCookie('access_token');
+                    if (token) {
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    }
+                };
+                return $.ajax(config);
+            }
+
+            // Create Room
+            $('#create-room-form').on('submit', function(e) {
+                e.preventDefault();
+                const slug = $(this).find('input[name="slug"]').val();
+                sendAjax({
+                    url: '/rooms',
+                    type: 'POST',
+                    data: { slug },
+                    success: function(room) {
+                        $('#rooms-tbody').append(`
+                            <tr id="room-${room.id}">
+                                <td class="px-6 py-4 whitespace-nowrap">${room.id}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${room.slug}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">N/A</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button class="delete-room-btn text-red-600 hover:underline ml-4" data-room-id="${room.id}">حذف</button>
+                                </td>
+                            </tr>
+                        `);
+                        $('#roomId').append(`<option value="${room.id}">${room.slug}</option>`);
+                        $('#create-room-form input[name="slug"]').val('');
+                    },
+                    error: function() {
+                        alert('خطا در ایجاد اتاق');
+                    }
+                });
+            });
+
+            // Delete Room
+            $('#rooms-tbody').on('click', '.delete-room-btn', function() {
+                const roomId = $(this).data('room-id');
+                if (confirm('آیا از حذف این اتاق اطمینان دارید؟')) {
+                    sendAjax({
+                        url: '/rooms/' + roomId,
+                        type: 'DELETE',
+                        success: function() {
+                            $('#room-' + roomId).remove();
+                            $('#roomId option[value="' + roomId + '"]').remove();
+                        },
+                        error: function() {
+                            alert('خطا در حذف اتاق');
+                        }
+                    });
+                }
+            });
+
+            // Disconnect Brand
+            $('#rooms-tbody').on('click', '.disconnect-brand-btn', function() {
+                const roomId = $(this).data('room-id');
+                if (confirm('آیا از قطع اتصال این برند اطمینان دارید؟')) {
+                    sendAjax({
+                        url: '/rooms/' + roomId + '/disconnect-brand',
+                        type: 'POST',
+                        success: function(room) {
+                            const row = $('#room-' + room.id);
+                            row.find('td').eq(2).text('N/A');
+                            row.find('.disconnect-brand-btn').remove();
+                        },
+                        error: function() {
+                            alert('خطا در قطع اتصال برند');
+                        }
+                    });
+                }
+            });
+
+            // Create Brand Modal
+            $('#create-brand-modal-btn').on('click', function() {
+                $('#create-brand-modal').removeClass('hidden');
+            });
+
+            $('#close-modal-btn').on('click', function() {
+                $('#create-brand-modal').addClass('hidden');
+            });
+
+            // Create Brand
+            $('#create-brand-form').on('submit', function(e) {
+                e.preventDefault();
+                const name = $(this).find('input[name="name"]').val();
+                sendAjax({
+                    url: '/rooms/brands',
+                    type: 'POST',
+                    data: { name },
+                    success: function(brand) {
+                        $('#brands-tbody').append(`
+                            <tr id="brand-${brand.id}">
+                                <td class="px-6 py-4 whitespace-nowrap">${brand.id}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${brand.name}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="/rooms/brands/${brand.id}/edit" class="text-blue-600 hover:underline mr-4">ویرایش</a>
+                                    <button class="delete-brand-btn text-red-600 hover:underline" data-brand-id="${brand.id}">حذف</button>
+                                </td>
+                            </tr>
+                        `);
+                        $('#brandId').append(`<option value="${brand.id}">${brand.name}</option>`);
+                        $('#create-brand-modal').addClass('hidden');
+                        $('#create-brand-form input[name="name"]').val('');
+                    },
+                    error: function() {
+                        alert('خطا در ایجاد برند');
+                    }
+                });
+            });
+
+            // Delete Brand
+            $('#brands-tbody').on('click', '.delete-brand-btn', function() {
+                const brandId = $(this).data('brand-id');
+                if (confirm('آیا از حذف این برند اطمینان دارید؟')) {
+                    sendAjax({
+                        url: '/rooms/brands/' + brandId,
+                        type: 'DELETE',
+                        success: function() {
+                            $('#brand-' + brandId).remove();
+                            $('#brandId option[value="' + brandId + '"]').remove();
+                        },
+                        error: function() {
+                            alert('خطا در حذف برند');
+                        }
+                    });
+                }
+            });
+
+            // Connect Brand
+            $('#connect-brand-form').on('submit', function(e) {
+                e.preventDefault();
+                const roomId = $('#roomId').val();
+                const brandId = $('#brandId').val();
+                sendAjax({
+                    url: '/rooms/connect-brand',
+                    type: 'POST',
+                    data: { roomId, brandId },
+                    success: function(room) {
+                        const row = $('#room-' + room.id);
+                        row.find('td').eq(2).text(room.brand.name);
+                        if (!row.find('.disconnect-brand-btn').length) {
+                            row.find('td').eq(3).prepend(`<button class="disconnect-brand-btn text-red-600 hover:underline" data-room-id="${room.id}">قطع اتصال</button>`);
+                        }
+                    },
+                    error: function() {
+                        alert('خطا در اتصال برند');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

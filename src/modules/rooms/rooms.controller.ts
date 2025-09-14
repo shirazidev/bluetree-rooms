@@ -8,17 +8,16 @@ import {
   Render,
   UseInterceptors,
   UploadedFiles,
-  Res,
-  NotFoundException,
   UseGuards,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerProfileStorage } from '../../common/utils/multer.util';
-import { Response } from 'express';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 
@@ -28,25 +27,21 @@ export class RoomsController {
 
   @Post('connect-brand')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async connectBrandToRoomFromAdmin(
     @Body() body: { roomId: string; brandId: string },
-    @Res() res: Response,
   ) {
-    await this.roomsService.connectBrandToRoom(
+    return this.roomsService.connectBrandToRoom(
       parseInt(body.roomId, 10),
       parseInt(body.brandId, 10),
     );
-    res.redirect('/admin');
   }
 
   @Post(':roomId/disconnect-brand')
   @UseGuards(AuthGuard)
-  async disconnectBrandFromRoom(
-    @Param('roomId') roomId: string,
-    @Res() res: Response,
-  ) {
-    await this.roomsService.disconnectBrandFromRoom(parseInt(roomId, 10));
-    res.redirect('/admin');
+  @HttpCode(HttpStatus.OK)
+  async disconnectBrandFromRoom(@Param('roomId') roomId: string) {
+    return this.roomsService.disconnectBrandFromRoom(parseInt(roomId, 10));
   }
 
   @Get('brands/create')
@@ -56,6 +51,7 @@ export class RoomsController {
   }
 
   @Get('brands/:id/edit')
+  @UseGuards(AuthGuard)
   @Render('edit-brand')
   async editBrandPage(@Param('id') id: string) {
     const brand = await this.roomsService.findBrandById(parseInt(id, 10));
@@ -64,6 +60,7 @@ export class RoomsController {
 
   @Post('brands/:id/update')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -80,22 +77,21 @@ export class RoomsController {
     @Body() updateBrandDto: UpdateBrandDto,
     @UploadedFiles()
     files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
-    @Res() res: Response,
   ) {
-    await this.roomsService.updateBrand(
+    return this.roomsService.updateBrand(
       parseInt(id, 10),
       updateBrandDto,
       files.logo ? files.logo[0] : null,
       files.teamMemberImages || [],
     );
-    res.redirect('/admin');
   }
 
-  @Post('brands/:id/delete')
+  @Delete('brands/:id')
   @UseGuards(AuthGuard)
-  async deleteBrand(@Param('id') id: string, @Res() res: Response) {
+  @HttpCode(HttpStatus.OK)
+  async deleteBrand(@Param('id') id: string) {
     await this.roomsService.deleteBrand(parseInt(id, 10));
-    res.redirect('/admin');
+    return { message: 'Brand deleted successfully' };
   }
 
   @Get(':slug')
@@ -119,7 +115,8 @@ export class RoomsController {
   }
 
   @Post('brands')
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -135,14 +132,12 @@ export class RoomsController {
     @Body() createBrandDto: CreateBrandDto,
     @UploadedFiles()
     files: { logo?: Express.Multer.File[]; teamMemberImages?: Express.Multer.File[] },
-    @Res() res: Response,
   ) {
-    await this.roomsService.createBrand(
+    return this.roomsService.createBrand(
       createBrandDto,
       files.logo ? files.logo[0] : null,
       files.teamMemberImages || [],
     );
-    res.redirect('/admin');
   }
 
   @Patch(':roomId/connect-brand/:brandId')
@@ -156,15 +151,16 @@ export class RoomsController {
 
   @Post()
   @UseGuards(AuthGuard)
-  async createRoom(@Body() createRoomDto: CreateRoomDto, @Res() res: Response) {
-    await this.roomsService.createRoom(createRoomDto);
-    res.redirect('/admin');
+  @HttpCode(HttpStatus.CREATED)
+  async createRoom(@Body() createRoomDto: CreateRoomDto) {
+    return this.roomsService.createRoom(createRoomDto);
   }
 
-  @Get('/delete/:id')
+  @Delete(':id')
   @UseGuards(AuthGuard)
-  async deleteRoom(@Param('id') id: string, @Res() res: Response) {
+  @HttpCode(HttpStatus.OK)
+  async deleteRoom(@Param('id') id: string) {
     await this.roomsService.deleteRoom(parseInt(id, 10));
-    res.redirect('/admin');
+    return { message: 'Room deleted successfully' };
   }
 }
