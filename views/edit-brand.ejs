@@ -19,11 +19,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Brand Name</label>
-                        <input type="text" id="name" name="name" value="<%= brand.name %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <input type="text" id="name" name="name" value="<%= brand.name || '' %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
                         <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-                        <input type="url" id="website" name="website" value="<%= brand.website %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <input type="url" id="website" name="website" value="<%= brand.website || '' %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
                     </div>
                     <div class="md:col-span-2">
                         <label for="logo" class="block text-sm font-medium text-gray-700">Logo</label>
@@ -38,57 +38,70 @@
             <!-- About Us -->
             <div class="mb-6">
                 <h2 class="text-2xl font-bold mb-4">About Us</h2>
+                <input type="hidden" name="aboutUs[id]" value="<%= brand.aboutUs?.id || '' %>">
                 <div>
                     <label for="aboutUsTitle" class="block text-sm font-medium text-gray-700">Title</label>
-                    <input type="text" id="aboutUsTitle" name="aboutUs[title]" value="<%= brand.aboutUs.title %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <input type="text" id="aboutUsTitle" name="aboutUs[title]" value="<%= brand.aboutUs?.title || '' %>" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
                 </div>
                 <div class="mt-4">
                     <label for="aboutUsDescription" class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea id="aboutUsDescription" name="aboutUs[description]" rows="4" required class="w-full px-4 py-2 border border-gray-300 rounded-lg"><%= brand.aboutUs.description %></textarea>
+                    <textarea id="aboutUsDescription" name="aboutUs[description]" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg"><%= brand.aboutUs?.description || '' %></textarea>
                 </div>
             </div>
 
             <!-- Team Members -->
             <div class="mb-6">
-                <h2 class="text-2xl font-bold mb-4">Team Members</h2>
-                <% brand.teamMembers.forEach((member, index) => { %>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 border rounded-lg">
-                        <input type="hidden" name="teamMembers[<%= index %>][id]" value="<%= member.id %>">
-                        <div>
-                            <label for="teamMemberName<%= index %>" class="block text-sm font-medium text-gray-700">Full Name</label>
-                            <input type="text" id="teamMemberName<%= index %>" name="teamMembers[<%= index %>][fullName]" value="<%= member.fullName %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Team Members</h2>
+                    <button type="button" id="add-team-member-btn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">+ Add Member</button>
+                </div>
+                <div id="team-members-container" class="space-y-4">
+                    <% brand.teamMembers?.forEach((member, index) => { %>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 border rounded-lg relative team-member-group">
+                            <input type="hidden" name="teamMembers[<%= index %>][id]" value="<%= member.id %>">
+                            <button type="button" class="absolute top-2 right-2 remove-btn text-red-500 hover:text-red-700 font-bold">X</button>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" name="teamMembers[<%= index %>][fullName]" value="<%= member.fullName %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Title</label>
+                                <input type="text" name="teamMembers[<%= index %>][title]" value="<%= member.title %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700">Profile Image</label>
+                                <input type="file" name="teamMemberImages" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                <% if (member.profileImageUrl) { %>
+                                    <img src="<%= member.profileImageUrl %>" alt="<%= member.fullName %>" class="mt-4 h-20">
+                                <% } %>
+                            </div>
                         </div>
-                        <div>
-                            <label for="teamMemberTitle<%= index %>" class="block text-sm font-medium text-gray-700">Title</label>
-                            <input type="text" id="teamMemberTitle<%= index %>" name="teamMembers[<%= index %>][title]" value="<%= member.title %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label for="teamMemberImage<%= index %>" class="block text-sm font-medium text-gray-700">Profile Image</label>
-                            <input type="file" id="teamMemberImage<%= index %>" name="teamMemberImages" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                            <% if (member.profileImageUrl) { %>
-                                <img src="<%= member.profileImageUrl %>" alt="<%= member.fullName %>" class="mt-4 h-20">
-                            <% } %>
-                        </div>
-                    </div>
-                <% }); %>
+                    <% }); %>
+                </div>
             </div>
 
             <!-- Contact Info -->
             <div class="mb-6">
-                <h2 class="text-2xl font-bold mb-4">Contact Information</h2>
-                <% brand.contactInfos.forEach((info, index) => { %>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 border rounded-lg">
-                        <input type="hidden" name="contactInfos[<%= index %>][id]" value="<%= info.id %>">
-                        <div>
-                            <label for="contactInfoType<%= index %>" class="block text-sm font-medium text-gray-700">Type</label>
-                            <input type="text" id="contactInfoType<%= index %>" name="contactInfos[<%= index %>][type]" value="<%= info.type %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                 <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Contact Information</h2>
+                    <button type="button" id="add-contact-info-btn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">+ Add Contact</button>
+                </div>
+                <div id="contact-infos-container" class="space-y-4">
+                    <% brand.contactInfos?.forEach((info, index) => { %>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 border rounded-lg relative contact-info-group">
+                             <input type="hidden" name="contactInfos[<%= index %>][id]" value="<%= info.id %>">
+                             <button type="button" class="absolute top-2 right-2 remove-btn text-red-500 hover:text-red-700 font-bold">X</button>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Type</label>
+                                <input type="text" name="contactInfos[<%= index %>][type]" value="<%= info.type %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Value</label>
+                                <input type="text" name="contactInfos[<%= index %>][value]" value="<%= info.value %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
                         </div>
-                        <div>
-                            <label for="contactInfoValue<%= index %>" class="block text-sm font-medium text-gray-700">Value</label>
-                            <input type="text" id="contactInfoValue<%= index %>" name="contactInfos[<%= index %>][value]" value="<%= info.value %>" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                <% }); %>
+                    <% }); %>
+                </div>
             </div>
 
             <div class="flex justify-end">
@@ -99,21 +112,72 @@
 
     <script>
         $(document).ready(function() {
+            let teamMemberIndex = <%= brand.teamMembers?.length || 0 %>;
+            let contactInfoIndex = <%= brand.contactInfos?.length || 0 %>;
+
+            // Add Team Member
+            $('#add-team-member-btn').on('click', function() {
+                const newMemberHtml = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 border rounded-lg relative team-member-group">
+                        <input type="hidden" name="teamMembers[${teamMemberIndex}][id]" value="">
+                        <button type="button" class="absolute top-2 right-2 remove-btn text-red-500 hover:text-red-700 font-bold">X</button>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" name="teamMembers[${teamMemberIndex}][fullName]" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Title</label>
+                            <input type="text" name="teamMembers[${teamMemberIndex}][title]" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Profile Image</label>
+                            <input type="file" name="teamMemberImages" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                `;
+                $('#team-members-container').append(newMemberHtml);
+                teamMemberIndex++;
+            });
+
+            // Add Contact Info
+            $('#add-contact-info-btn').on('click', function() {
+                const newContactHtml = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 border rounded-lg relative contact-info-group">
+                        <input type="hidden" name="contactInfos[${contactInfoIndex}][id]" value="">
+                        <button type="button" class="absolute top-2 right-2 remove-btn text-red-500 hover:text-red-700 font-bold">X</button>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Type</label>
+                            <input type="text" name="contactInfos[${contactInfoIndex}][type]" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Value</label>
+                            <input type="text" name="contactInfos[${contactInfoIndex}][value]" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                `;
+                $('#contact-infos-container').append(newContactHtml);
+                contactInfoIndex++;
+            });
+
+            // Remove buttons (delegated event)
+            $('#team-members-container, #contact-infos-container').on('click', '.remove-btn', function() {
+                $(this).closest('.team-member-group, .contact-info-group').remove();
+            });
+
+            // AJAX Form Submission
             $('#edit-brand-form').on('submit', function(e) {
                 e.preventDefault();
-
                 const formData = new FormData(this);
 
                 $.ajax({
                     url: $(this).attr('action'),
                     type: 'POST',
                     data: formData,
-                    processData: false, // Important! Tells jQuery not to process the data
-                    contentType: false, // Important! Tells jQuery not to set contentType
+                    processData: false, 
+                    contentType: false,
                     success: function(response) {
                         alert('Brand updated successfully!');
-                        // Optionally, redirect or update UI
-                         window.location.href = '/admin';
+                        window.location.href = '/admin';
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : 'An error occurred.';
