@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateBrandDto } from './dto/create-brand.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Room } from './entities/room.entity';
 import { DataSource, Repository } from 'typeorm';
+import { Room } from './entities/room.entity';
 import { Brand } from './entities/brand.entity';
 import { TeamMember } from './entities/team-member.entity';
 import { ContactInfo } from './entities/contact-info.entity';
 import { AboutUs } from './entities/about-us.entity';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { CreateBrandDto } from './dto/create-brand.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
 import { ImageService } from '../image/image.service';
 import { ImageDto } from '../image/dto/create-image.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
 
 @Injectable()
 export class RoomsService {
@@ -19,24 +19,14 @@ export class RoomsService {
     private roomRepository: Repository<Room>,
     @InjectRepository(Brand)
     private brandRepository: Repository<Brand>,
-    @InjectRepository(TeamMember)
-    private teamMemberRepository: Repository<TeamMember>,
-    @InjectRepository(ContactInfo)
-    private contactInfoRepository: Repository<ContactInfo>,
-    @InjectRepository(AboutUs)
-    private aboutUsRepository: Repository<AboutUs>,
     private dataSource: DataSource,
     private readonly imageService: ImageService,
   ) {}
-  async findBySlugWithBrand(slug: string) {
+
+  async findBySlugWithBrand(slug: string): Promise<Room> {
     const room = await this.roomRepository.findOne({
       where: { slug },
-      relations: [
-        'brand',
-        'brand.teamMembers',
-        'brand.contactInfos',
-        'brand.aboutUs',
-      ],
+      relations: ['brand', 'brand.teamMembers', 'brand.contactInfos', 'brand.aboutUs'],
     });
     if (!room) {
       throw new NotFoundException(`Room with slug ${slug} not found`);
@@ -55,162 +45,130 @@ export class RoomsService {
     return brand;
   }
 
-  async createBrand(
-    createBrandDto: CreateBrandDto,
-    logo: Express.Multer.File | null,
-    teamMemberImages: Express.Multer.File[],
-  ): Promise<Brand> {
+  async createBrand(createBrandDto: CreateBrandDto): Promise<Brand> {
     return this.dataSource.transaction(async (manager) => {
-      const { teamMembers, contactInfos, aboutUs, ...brandData } =
-        createBrandDto;
-
-      const brand = manager.create(Brand, brandData);
-      if (logo) {
-        const imageDto: ImageDto = {
-          name: brandData.name,
-          alt: brandData.name,
-          image: logo.originalname,
-        };
-        const logoImage = await this.imageService.create(imageDto, logo);
-        brand.logoUrl = logoImage.data.location;
-      }
-      await manager.save(brand);
-
-      const aboutUsEntity = manager.create(AboutUs, { ...aboutUs, brand });
-      await manager.save(aboutUsEntity);
-
-      if (teamMembers && teamMembers.length > 0) {
-        const teamMemberEntities = await Promise.all(
-          teamMembers.map(async (tm, index) => {
-            const teamMember = manager.create(TeamMember, { ...tm, brand });
-            if (teamMemberImages && teamMemberImages[index]) {
-              const imageFile = teamMemberImages[index];
-              const imageDto: ImageDto = {
-                name: tm.fullName,
-                alt: tm.fullName,
-                image: imageFile.originalname,
-              };
-              const profileImage = await this.imageService.create(
-                imageDto,
-                imageFile,
-              );
-              teamMember.profileImageUrl = profileImage.data.location;
-            }
-            return manager.save(teamMember);
-          }),
-        );
-        brand.teamMembers = teamMemberEntities;
-      }
-
-      if (contactInfos && contactInfos.length > 0) {
-        const contactInfoEntities = contactInfos.map((ci) =>
-          manager.create(ContactInfo, { ...ci, brand }),
-        );
-        await manager.save(contactInfoEntities);
-        brand.contactInfos = contactInfoEntities;
-      }
-
-      brand.aboutUs = aboutUsEntity;
-
-      return brand;
+        const { name } = createBrandDto;
+        const brand = manager.create(Brand, { name });
+        return manager.save(brand);
     });
   }
 
   async updateBrand(
     brandId: number,
     updateBrandDto: UpdateBrandDto,
-    logo: Express.Multer.File | null,
-    teamMemberImages: Express.Multer.File[],
+    files: { logo?: Express.Multer.File[], teamMemberImages?: Express.Multer.File[] },
   ): Promise<Brand> {
     return this.dataSource.transaction(async (manager) => {
-      const brand = await manager.findOne(Brand, { where: { id: brandId } });
+      const brand = await manager.findOne(Brand, {
+        where: { id: brandId },
+        relations: ['teamMembers', 'contactInfos', 'aboutUs'],
+      });
+
       if (!brand) {
         throw new NotFoundException(`Brand with ID ${brandId} not found`);
       }
 
-      Object.assign(brand, updateBrandDto.brand);
-      if (logo) {
-        const imageDto: ImageDto = {
-          name: brand.name,
-          alt: brand.name,
-          image: logo.originalname,
-        };
-        const logoImage = await this.imageService.create(imageDto, logo);
+      // Update basic brand info
+      brand.name = updateBrandDto.name;
+      brand.website = updateBrandDto.website;
+
+      if (files.logo?.[0]) {
+        const logoImage = await this.imageService.create(
+          { name: brand.name, alt: `${brand.name} logo` },
+          files.logo[0],
+        );
         brand.logoUrl = logoImage.data.location;
       }
-      await manager.save(brand);
 
+      // Sync About Us
       if (updateBrandDto.aboutUs) {
-        const aboutUs = await manager.findOne(AboutUs, {
-          where: { brand: { id: brandId } },
-        });
-        if (aboutUs) {
-          Object.assign(aboutUs, updateBrandDto.aboutUs);
-          await manager.save(aboutUs);
-        }
+          if (brand.aboutUs) {
+              manager.merge(AboutUs, brand.aboutUs, updateBrandDto.aboutUs);
+          } else {
+              const newAboutUs = manager.create(AboutUs, { ...updateBrandDto.aboutUs, brand });
+              brand.aboutUs = newAboutUs;
+          }
+      } 
+
+      // Sync Team Members
+      const incomingTeamMembers = updateBrandDto.teamMembers || [];
+      const existingTeamMembers = brand.teamMembers || [];
+      const teamMemberImages = files.teamMemberImages || [];
+      let imageCounter = 0;
+
+      // Delete removed team members
+      const membersToDelete = existingTeamMembers.filter(
+          (em) => !incomingTeamMembers.some((im) => im.id && em.id === im.id),
+      );
+      if (membersToDelete.length > 0) {
+          await manager.remove(membersToDelete);
       }
 
-      if (updateBrandDto.teamMembers) {
-        await Promise.all(
-          updateBrandDto.teamMembers.map(async (tmDto, index) => {
-            const teamMember = await manager.findOne(TeamMember, {
-              where: { id: tmDto.id },
-            });
-            if (teamMember) {
-              Object.assign(teamMember, tmDto);
-              if (teamMemberImages && teamMemberImages[index]) {
-                const imageFile = teamMemberImages[index];
-                const imageDto: ImageDto = {
-                  name: tmDto.fullName,
-                  alt: tmDto.fullName,
-                  image: imageFile.originalname,
-                };
-                const profileImage = await this.imageService.create(
-                  imageDto,
-                  imageFile,
-                );
-                teamMember.profileImageUrl = profileImage.data.location;
+      brand.teamMembers = await Promise.all(
+          incomingTeamMembers.map(async (tmDto) => {
+              if (tmDto.id) {
+                  // Update existing member
+                  const existingMember = existingTeamMembers.find(em => em.id === tmDto.id);
+                  if (!existingMember) return; // Should not happen
+                  manager.merge(TeamMember, existingMember, { fullName: tmDto.fullName, title: tmDto.title });
+                  return existingMember;
+              } else {
+                  // Create new member
+                  const newMember = manager.create(TeamMember, { ...tmDto, brand });
+                  const imageFile = teamMemberImages[imageCounter++];
+                  if (imageFile) {
+                      const profileImage = await this.imageService.create(
+                          { name: newMember.fullName, alt: newMember.fullName },
+                           imageFile
+                      );
+                      newMember.profileImageUrl = profileImage.data.location;
+                  }
+                  return newMember;
               }
-              await manager.save(teamMember);
-            }
-          }),
-        );
-      }
+          })
+      );
+      
+       // Sync Contact Infos
+       const incomingContactInfos = updateBrandDto.contactInfos || [];
+       const existingContactInfos = brand.contactInfos || [];
 
-      if (updateBrandDto.contactInfos) {
-        await Promise.all(
-          updateBrandDto.contactInfos.map(async (ciDto) => {
-            const contactInfo = await manager.findOne(ContactInfo, {
-              where: { id: ciDto.id },
-            });
-            if (contactInfo) {
-              Object.assign(contactInfo, ciDto);
-              await manager.save(contactInfo);
-            }
-          }),
-        );
-      }
+       const contactsToDelete = existingContactInfos.filter(
+         (ec) => !incomingContactInfos.some((ic) => ic.id && ec.id === ic.id),
+       );
+       if (contactsToDelete.length > 0) {
+         await manager.remove(contactsToDelete);
+       }
 
-      return this.findBrandById(brandId);
+       brand.contactInfos = incomingContactInfos.map((ciDto) => {
+         if (ciDto.id) {
+           const existingContact = existingContactInfos.find(ec => ec.id === ciDto.id);
+           if(existingContact) {
+             return manager.merge(ContactInfo, existingContact, ciDto);
+            }
+         } else {
+           return manager.create(ContactInfo, { ...ciDto, brand });
+         }
+       }).filter(ci => ci);
+
+      return manager.save(brand);
     });
   }
 
+  // ... other methods ...
   async connectBrandToRoom(roomId: number, brandId: number) {
     const room = await this.roomRepository.findOne({ where: { id: roomId } });
     if (!room) throw new NotFoundException('Room not found');
-    const brand = await this.brandRepository.findOne({
-      where: { id: brandId },
-    });
+    const brand = await this.brandRepository.findOne({ where: { id: brandId } });
     if (!brand) throw new NotFoundException('Brand not found');
-    room.brandId = brandId;
+    room.brand = brand;
     await this.roomRepository.save(room);
     return room;
   }
 
   async disconnectBrandFromRoom(roomId: number) {
-    const room = await this.roomRepository.findOne({ where: { id: roomId } });
+    const room = await this.roomRepository.findOne({ where: { id: roomId }, relations: ['brand'] });
     if (!room) throw new NotFoundException('Room not found');
-    room.brandId = null;
+    room.brand = null;
     await this.roomRepository.save(room);
     return room;
   }
@@ -229,14 +187,11 @@ export class RoomsService {
   }
 
   async deleteBrand(brandId: number): Promise<void> {
-    await this.dataSource.transaction(async (manager) => {
-        const brand = await manager.findOneBy(Brand, { id: brandId });
-        if (!brand) {
-            throw new NotFoundException(`Brand with ID ${brandId} not found`);
-        }
-        await manager.update(Room, { brandId }, { brandId: null });
-        await manager.remove(brand);
-    });
+    const brand = await this.brandRepository.findOne({ where: {id: brandId}});
+    if (!brand) {
+      throw new NotFoundException(`Brand with ID ${brandId} not found`);
+    }
+    await this.brandRepository.remove(brand);
   }
 
   async deleteRoom(roomId: number): Promise<void> {
