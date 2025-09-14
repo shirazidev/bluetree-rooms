@@ -119,7 +119,7 @@ export class RoomsController {
   }
 
   @Post('brands')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
