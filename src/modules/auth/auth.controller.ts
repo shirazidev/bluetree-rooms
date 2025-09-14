@@ -42,9 +42,10 @@ export class AuthController {
 
   @Post('/login')
   @ApiConsumes(SwaggerConsumesEnum.FORM, SwaggerConsumesEnum.JSON)
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+  @Render('redirect')
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const { accessToken } = await this.authService.login(loginDto);
     res.cookie('access_token', accessToken, { httpOnly: true });
-    res.redirect('/admin');
+    return { url: '/admin' };
   }
 }
