@@ -86,8 +86,12 @@ export class RoomsService {
       }
 
       // Update basic brand info
-      brand.name = updateBrandDto.name;
-      brand.website = updateBrandDto.website;
+      if (updateBrandDto.name !== undefined) {
+        brand.name = updateBrandDto.name;
+      }
+      if (updateBrandDto.website !== undefined) {
+        brand.website = updateBrandDto.website;
+      }
 
       if (files.logo?.[0]) {
         const logoFile = files.logo[0];
