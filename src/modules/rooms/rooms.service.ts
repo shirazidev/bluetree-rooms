@@ -90,9 +90,10 @@ export class RoomsService {
       brand.website = updateBrandDto.website;
 
       if (files.logo?.[0]) {
+        const logoFile = files.logo[0];
         const logoImage = await this.imageService.create(
-          { name: brand.name, alt: `${brand.name} logo` },
-          files.logo[0],
+          { name: brand.name, alt: `${brand.name} logo`, image: logoFile.originalname },
+          logoFile,
         );
         brand.logoUrl = logoImage.data.location;
       }
@@ -113,7 +114,6 @@ export class RoomsService {
       const teamMemberImages = files.teamMemberImages || [];
       let imageCounter = 0;
 
-      // Delete removed team members
       const membersToDelete = existingTeamMembers.filter(
           (em) => !incomingTeamMembers.some((im) => im.id && em.id === im.id),
       );
@@ -121,30 +121,27 @@ export class RoomsService {
           await manager.remove(membersToDelete);
       }
 
-      brand.teamMembers = await Promise.all(
-          incomingTeamMembers.map(async (tmDto) => {
-              if (tmDto.id) {
-                  // Update existing member
-                  const existingMember = existingTeamMembers.find(em => em.id === tmDto.id);
-                  if (!existingMember) return; // Should not happen
-                  manager.merge(TeamMember, existingMember, { fullName: tmDto.fullName, title: tmDto.title });
-                  return existingMember;
-              } else {
-                  // Create new member
-                  const newMember = manager.create(TeamMember, { ...tmDto, brand });
-                  const imageFile = teamMemberImages[imageCounter++];
-                  if (imageFile) {
-                      const profileImage = await this.imageService.create(
-                          { name: newMember.fullName, alt: newMember.fullName },
-                           imageFile
-                      );
-                      newMember.profileImageUrl = profileImage.data.location;
-                  }
-                  return newMember;
+      const teamMembersPromise = incomingTeamMembers.map(async (tmDto) => {
+          if (tmDto.id) {
+              const existingMember = existingTeamMembers.find(em => em.id === tmDto.id);
+              if (!existingMember) return null;
+              return manager.merge(TeamMember, existingMember, { fullName: tmDto.fullName, title: tmDto.title });
+          } else {
+              const newMember = manager.create(TeamMember, { ...tmDto, brand });
+              const imageFile = teamMemberImages[imageCounter++];
+              if (imageFile) {
+                  const profileImage = await this.imageService.create(
+                      { name: newMember.fullName, alt: newMember.fullName, image: imageFile.originalname },
+                       imageFile
+                  );
+                  newMember.profileImageUrl = profileImage.data.location;
               }
-          })
-      );
+              return newMember;
+          }
+      });
       
+      brand.teamMembers = (await Promise.all(teamMembersPromise)).filter(Boolean) as TeamMember[];
+
        // Sync Contact Infos
        const incomingContactInfos = updateBrandDto.contactInfos || [];
        const existingContactInfos = brand.contactInfos || [];
@@ -162,16 +159,16 @@ export class RoomsService {
            if(existingContact) {
              return manager.merge(ContactInfo, existingContact, ciDto);
             }
+            return null;
          } else {
            return manager.create(ContactInfo, { ...ciDto, brand });
          }
-       }).filter(ci => ci);
+       }).filter(Boolean) as ContactInfo[];
 
       return manager.save(brand);
     });
   }
 
-  // ... other methods ...
   async connectBrandToRoom(roomId: number, brandId: number) {
     const room = await this.roomRepository.findOne({ where: { id: roomId } });
     if (!room) throw new NotFoundException('Room not found');

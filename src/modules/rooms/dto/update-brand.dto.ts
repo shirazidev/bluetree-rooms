@@ -1,71 +1,67 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-
-class BrandDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsString()
-  @IsOptional()
-  website?: string;
-}
+import { IsOptional, IsArray, ValidateNested, IsString, IsNumber } from 'class-validator';
 
 class AboutUsDto {
-  @IsNumber()
-  id: number;
+    @IsOptional()
+    @IsNumber()
+    id?: number;
 
-  @IsString()
-  @IsNotEmpty()
-  title: string;
+    @IsOptional()
+    @IsString()
+    title?: string;
 
-  @IsString()
-  @IsNotEmpty()
-  description: string;
+    @IsOptional()
+    @IsString()
+    description?: string;
 }
 
 class TeamMemberDto {
-  @IsNumber()
-  id: number;
+    @IsOptional()
+    @IsNumber()
+    id?: number;
 
-  @IsString()
-  @IsNotEmpty()
-  fullName: string;
+    @IsString()
+    fullName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  title: string;
+    @IsString()
+    title: string;
 }
 
 class ContactInfoDto {
-  @IsNumber()
-  id: number;
+    @IsOptional()
+    @IsNumber()
+    id?: number;
 
-  @IsString()
-  @IsNotEmpty()
-  type: string;
+    @IsString()
+    type: string;
 
-  @IsString()
-  @IsNotEmpty()
-  value: string;
+    @IsString()
+    value: string;
 }
 
 export class UpdateBrandDto {
-  @ValidateNested()
-  @Type(() => BrandDto)
-  brand: BrandDto;
+    @IsOptional()
+    @IsString()
+    name?: string;
 
-  @ValidateNested()
-  @Type(() => AboutUsDto)
-  aboutUs: AboutUsDto;
+    @IsOptional()
+    @IsString()
+    website?: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TeamMemberDto)
-  teamMembers: TeamMemberDto[];
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => AboutUsDto)
+    aboutUs?: AboutUsDto;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ContactInfoDto)
-  contactInfos: ContactInfoDto[];
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => TeamMemberDto)
+    teamMembers?: TeamMemberDto[];
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ContactInfoDto)
+    contactInfos?: ContactInfoDto[];
 }
